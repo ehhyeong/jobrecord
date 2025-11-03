@@ -6,6 +6,7 @@ import com.jobproj.api.repo.UserRepo;
 import com.jobproj.api.repo.UserRepo.UserRow;
 import com.jobproj.api.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,10 @@ public class UserService {
   private final UserRepo userRepo;
   private final PasswordEncoder passwordEncoder;
   private final JwtTokenProvider jwtTokenProvider;
+
+  // Access 토큰 TTL을 yml에서 주입
+  @Value("${jwt.expiration-ms:3600000}")
+  private long accessTokenTtlMs; // ms 단위
 
   /** 로그인 */
   public LoginResponse login(String email, String password) {
@@ -29,10 +34,12 @@ public class UserService {
     }
 
     // 3) 토큰 생성
-    String token = jwtTokenProvider.createToken(user);
+    // Access 토큰 발급 메서드로 명시
+    String token = jwtTokenProvider.createAccessToken(user);
 
     // 4) 응답 DTO 반환 (accessToken, tokenType=Bearer, expiresIn)
-    long expiresIn = 3_600_000L; // 1시간(ms) — JwtTokenProvider에 TTL 메서드가 있으면 그걸로 교체
+    // TTL 하드코드 대신 주입값 사용
+    long expiresIn = accessTokenTtlMs;
     return LoginResponse.of(token, expiresIn);
   }
 
@@ -51,5 +58,16 @@ public class UserService {
 
     // 4) 저장
     userRepo.save(email, encodedPassword, name, role);
+  }
+
+  // 유저/TTL 유틸
+  public UserRepo.UserRow loadUserRowByEmail(String email) {
+    return userRepo.findByEmail(email)
+        .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+  }
+
+  // Access TTL 조회
+  public long getAccessTokenTtlMs() {
+    return accessTokenTtlMs;
   }
 }

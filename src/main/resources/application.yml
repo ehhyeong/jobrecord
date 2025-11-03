@@ -1,5 +1,8 @@
 server:
   port: 8080
+  # 업로드 한도 초과 시 에러 응답이 제대로 전달되도록(요청 바디를 삼키지 않게)
+  tomcat:
+    max-swallow-size: -1
 
 spring:
   datasource:
@@ -9,14 +12,23 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       connectionInitSql: "SET NAMES utf8mb4"
+
   jackson:
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
 
+  # 업로드 최대 용량 10MB 설정
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+      # 멀티파트 파싱 지연 → 컨트롤러/예외처리단에서 잡도록
+      resolve-lazily: true
+
 management:
   endpoints:
     web:
-      base-path: /api
+      base-path: /api/actuator
       exposure:
         include: health,info
   health:
@@ -26,6 +38,8 @@ management:
 jwt:
   secret-key: "Sm9iUmVjb3JkX1Byb2plY3RfU2VjcmV0X0tleV9FbmNvZGVfUGxlYXNl"
   expiration-ms: 3600000
+  # Refresh 토큰 만료 14일
+  refresh-expiration-ms: 1209600000
 
 springdoc:
   api-docs:

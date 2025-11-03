@@ -31,10 +31,10 @@ dependencies {
     // ✅ Swagger (Spring Boot 3.3.x 호환 최신 안정버전)
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
 
-    // ✅ JWT
-    implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
-    runtimeOnly   'io.jsonwebtoken:jjwt-impl:0.12.5'
-    runtimeOnly   'io.jsonwebtoken:jjwt-jackson:0.12.5'
+    // ✅ JWT 0.11.5 (parserBuilder 사용 가능, 안정 조합)
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly   'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly   'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
     // ✅ DB
     runtimeOnly 'com.mysql:mysql-connector-j'

@@ -3,7 +3,7 @@ package com.jobproj.api.repo;
 import com.jobproj.api.domain.Role;
 import java.sql.*;
 import java.util.Optional;
-import org.springframework.dao.EmptyResultDataAccessException; // ✅ 추가
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.*;
 import org.springframework.stereotype.Repository;
 
@@ -43,7 +43,7 @@ public class UserRepo {
     return jdbc.query(sql, new UserRow(), email).stream().findFirst();
   }
 
-  // ✅ 이메일로 users_id만 조회 (컨텍스트 사용자 ID 변환에 사용)
+  // 이메일로 users_id만 조회 (컨텍스트 사용자 ID 변환에 사용)
   public Optional<Long> findIdByEmail(String email) {
     String sql = "SELECT users_id FROM jobproject_users WHERE users_email = ?";
     try {

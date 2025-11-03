@@ -17,7 +17,7 @@ public class CurrentUser {
     if (auth == null || auth.getName() == null) {
       throw new IllegalStateException("unauthenticated");
     }
-    var email = auth.getName();
+    var email = auth.getName(); // JwtAuthenticationFilter에서 UserDetails(username=email)로 세팅됨
     return userRepo
         .findIdByEmail(email)
         .orElseThrow(() -> new IllegalStateException("user not found: " + email));

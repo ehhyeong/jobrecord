@@ -30,10 +30,10 @@ public class AttachmentRepository {
   public long create(CreateRequest r) {
     var sql =
         """
-      INSERT INTO jobproject_attachment
-      (resume_id,filename,content_type,size_bytes,storage_key,is_profile_image)
-      VALUES(:rid,:fn,:ct,:sz,:key,:pi)
-    """;
+        INSERT INTO jobproject_attachment
+        (resume_id,filename,content_type,size_bytes,storage_key,is_profile_image)
+        VALUES(:rid,:fn,:ct,:sz,:key,:pi)
+        """;
     var ps =
         new MapSqlParameterSource()
             .addValue("rid", r.resumeId())
@@ -54,6 +54,12 @@ public class AttachmentRepository {
     return jdbc.query(sql, Map.of("rid", resumeId), this::map);
   }
 
+  public Optional<Response> findById(long id) {
+    var sql = "SELECT * FROM jobproject_attachment WHERE attachment_id=:id";
+    var list = jdbc.query(sql, Map.of("id", id), this::map);
+    return list.stream().findFirst();
+  }
+
   public int delete(long id) {
     return jdbc.update(
         "DELETE FROM jobproject_attachment WHERE attachment_id=:id", Map.of("id", id));
@@ -63,16 +69,16 @@ public class AttachmentRepository {
     // 프로필 단일성: 모두 0 -> 대상만 1
     jdbc.update(
         """
-      UPDATE jobproject_attachment
-      SET is_profile_image=0 WHERE resume_id=:rid
-    """,
+        UPDATE jobproject_attachment
+        SET is_profile_image=0 WHERE resume_id=:rid
+        """,
         Map.of("rid", resumeId));
     return jdbc.update(
         """
-      UPDATE jobproject_attachment
-      SET is_profile_image=1
-      WHERE resume_id=:rid AND attachment_id=:id
-    """,
+        UPDATE jobproject_attachment
+        SET is_profile_image=1
+        WHERE resume_id=:rid AND attachment_id=:id
+        """,
         new MapSqlParameterSource().addValue("rid", resumeId).addValue("id", attachmentId));
   }
 }

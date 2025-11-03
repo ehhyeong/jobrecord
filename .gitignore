@@ -1,21 +1,58 @@
-# Build / Gradle
-/build/
-/.gradle/
-!gradle/wrapper/gradle-wrapper.jar
+# ---- 업로드 산출물: 실제 파일은 커밋 금지, 폴더만 유지
+/uploads/
+/uploads/**
+!/uploads/.gitkeep
 
-# IntelliJ / Eclipse
-/.idea/
-/*.iml
-/.project
-/.classpath
-/.settings/
+# ---- 로컬/민감 설정
+application-local.yml
+application-*.local.yml
+*.env
+.env
+.env.*
 
-# Logs
+# ---- Gradle/빌드 산출물
+.gradle/
+build/
+**/build/
+
+# ---- IDE 설정/산출물
+.idea/
+*.iml
+# Eclipse(혹시 쓸 경우)
+.classpath
+.project
+.settings/
+# IntelliJ out 폴더
+/out/
+# VSCode
+/.vscode/
+
+# ---- 로그/임시 파일
 *.log
+logs/
+log/
+tmp/
+.temp/
 
-# OS
+# ---- 테스트/품질 도구 산출물
+/coverage/
+/.jacoco/
+/.sonar/
+/.sonarlint/
+/.scannerwork/
+
+# ---- 데이터베이스 로컬 파일(H2 등 사용 시)
+*.h2.db
+*.mv.db
+
+# ---- 자바 크래시/프로파일 덤프
+hs_err_pid*
+replay_pid*.log
+
+# ---- OS 잔여 파일
 .DS_Store
 Thumbs.db
 
-# Spring
-/tmp/
+# ---- 병합 충돌 잔재
+*.orig
+*.rej
