@@ -22,16 +22,19 @@ public class EducationController {
   }
 
   @PostMapping("/resumes/{resumeId}/educations")
-  @Operation(summary = "학력 섹션 생성", tags = {"섹션"})
-  public ApiResponse<Long> create(@PathVariable long resumeId,
-                                  @RequestBody CreateRequest r) {
+  @Operation(
+      summary = "학력 섹션 생성",
+      tags = {"섹션"})
+  public ApiResponse<Long> create(@PathVariable long resumeId, @RequestBody CreateRequest r) {
     r.resumeId = resumeId;
     var id = svc.create(r);
     return ApiResponse.ok(id);
   }
 
   @GetMapping("/resumes/{resumeId}/educations")
-  @Operation(summary = "학력 섹션 목록", tags = {"섹션"})
+  @Operation(
+      summary = "학력 섹션 목록",
+      tags = {"섹션"})
   public ApiResponse<PageResponse<Response>> list(
       @PathVariable long resumeId,
       @RequestParam(defaultValue = "0") Integer page,
@@ -43,7 +46,9 @@ public class EducationController {
   }
 
   @GetMapping("/educations/{id}")
-  @Operation(summary = "학력 섹션 조회", tags = {"섹션"})
+  @Operation(
+      summary = "학력 섹션 조회",
+      tags = {"섹션"})
   public ApiResponse<Response> get(@PathVariable long id) {
     return svc.get(id)
         .map(ApiResponse::ok)
@@ -51,7 +56,9 @@ public class EducationController {
   }
 
   @PutMapping("/educations/{id}")
-  @Operation(summary = "학력 섹션 수정", tags = {"섹션"})
+  @Operation(
+      summary = "학력 섹션 수정",
+      tags = {"섹션"})
   public ApiResponse<?> update(@PathVariable long id, @RequestBody UpdateRequest r) {
     return svc.update(id, r)
         ? ApiResponse.ok("updated", true)
@@ -59,7 +66,9 @@ public class EducationController {
   }
 
   @DeleteMapping("/educations/{id}")
-  @Operation(summary = "학력 섹션 삭제", tags = {"섹션"})
+  @Operation(
+      summary = "학력 섹션 삭제",
+      tags = {"섹션"})
   public ApiResponse<?> delete(@PathVariable long id) {
     return svc.delete(id)
         ? ApiResponse.ok("deleted", true)

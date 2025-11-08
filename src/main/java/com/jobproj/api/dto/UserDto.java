@@ -8,20 +8,20 @@ import lombok.Getter;
 @Getter
 public class UserDto {
 
-    // "내 정보" 응답용 DTO
-    @Getter
-    public static class Response {
-        private final Long id;
-        private final String email;
-        private final String name;
-        private final Role role;
+  // "내 정보" 응답용 DTO
+  @Getter
+  public static class Response {
+    private final Long id;
+    private final String email;
+    private final String name;
+    private final Role role;
 
-        // UserRow(DB) 객체를 Response(DTO) 객체로 변환하는 생성자
-        public Response(UserRow user) {
-            this.id = user.id;
-            this.email = user.email;
-            this.name = user.name;
-            this.role = user.role;
-        }
+    // UserRow(DB) 객체를 Response(DTO) 객체로 변환하는 생성자
+    public Response(UserRow user) {
+      this.id = user.id;
+      this.email = user.email;
+      this.name = user.name;
+      this.role = user.role;
     }
+  }
 }

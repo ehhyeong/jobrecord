@@ -33,8 +33,7 @@ public class ResumeService {
     if (usersId == null) throw new IllegalArgumentException("usersId required");
     var ownerOpt = repo.findOwnerId(id);
     if (ownerOpt.isEmpty()) return Optional.empty();
-    if (!ownerOpt.get().equals(usersId))
-      throw new OwnerMismatchException("resume owner != me");
+    if (!ownerOpt.get().equals(usersId)) throw new OwnerMismatchException("resume owner != me");
     return repo.findById(id);
   }
 

@@ -2,6 +2,12 @@ package com.jobproj.api.attachment;
 
 import com.jobproj.api.attachment.AttachmentDto.CreateRequest;
 import com.jobproj.api.attachment.AttachmentDto.Response;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ContentDisposition;
@@ -10,13 +16,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 @Service
 public class AttachmentService {
@@ -28,11 +27,11 @@ public class AttachmentService {
   }
 
   private static final Set<String> ALLOWED_EXT = Set.of("png", "jpg", "jpeg", "pdf");
-  private static final Set<String> ALLOWED_CT  = Set.of(
-      "image/png", "image/jpeg", "application/pdf"
-  );
+  private static final Set<String> ALLOWED_CT =
+      Set.of("image/png", "image/jpeg", "application/pdf");
 
   private static final long MAX_SIZE_BYTES = 10L * 1024 * 1024;
+
   private static String extOf(String filename) {
     if (filename == null) return "";
     String base = Path.of(filename).getFileName().toString();
@@ -84,9 +83,8 @@ public class AttachmentService {
     }
 
     // 저장 파일명: UUID_원본파일명
-    String safeName = (originalName == null)
-        ? ("file." + ext)
-        : Path.of(originalName).getFileName().toString();
+    String safeName =
+        (originalName == null) ? ("file." + ext) : Path.of(originalName).getFileName().toString();
     String storedName = UUID.randomUUID() + "_" + safeName;
     Path dest = uploadDir.resolve(storedName);
 
@@ -101,14 +99,14 @@ public class AttachmentService {
     String storageKey = storedName;
 
     // 3) 메타데이터 저장 (profile 이미지는 기본 false)
-    CreateRequest meta = new CreateRequest(
-        resumeId == null ? 0L : resumeId, // FK 제약 쓰는 경우 실제 존재하는 resumeId를 넣어야 함 (기존)
-        safeName,
-        contentType,
-        file.getSize(),
-        storageKey,
-        false
-    );
+    CreateRequest meta =
+        new CreateRequest(
+            resumeId == null ? 0L : resumeId, // FK 제약 쓰는 경우 실제 존재하는 resumeId를 넣어야 함 (기존)
+            safeName,
+            contentType,
+            file.getSize(),
+            storageKey,
+            false);
 
     return repo.create(meta);
   }
@@ -140,8 +138,9 @@ public class AttachmentService {
   }
 
   public DownloadPayload prepareDownload(long attachmentId) {
-    var meta = repo.findById(attachmentId)
-        .orElseThrow(() -> new IllegalArgumentException("attachment not found"));
+    var meta =
+        repo.findById(attachmentId)
+            .orElseThrow(() -> new IllegalArgumentException("attachment not found"));
 
     Path path = Paths.get("uploads").resolve(meta.storageKey());
     if (!Files.exists(path)) {
@@ -151,13 +150,13 @@ public class AttachmentService {
     Resource resource = new FileSystemResource(path);
 
     // 안전 기본값은 application/octet-stream, 이미지/PDF면 원래 타입 유지
-    String ct = (meta.contentType() == null || meta.contentType().isBlank())
-        ? MediaType.APPLICATION_OCTET_STREAM_VALUE
-        : meta.contentType();
+    String ct =
+        (meta.contentType() == null || meta.contentType().isBlank())
+            ? MediaType.APPLICATION_OCTET_STREAM_VALUE
+            : meta.contentType();
 
-    var cd = ContentDisposition.attachment()
-        .filename(meta.filename(), StandardCharsets.UTF_8)
-        .build();
+    var cd =
+        ContentDisposition.attachment().filename(meta.filename(), StandardCharsets.UTF_8).build();
 
     HttpHeaders headers = new HttpHeaders();
     headers.setContentDisposition(cd);

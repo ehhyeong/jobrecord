@@ -5,40 +5,42 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.Date;
 import javax.crypto.SecretKey;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import lombok.extern.slf4j.Slf4j;
-import io.jsonwebtoken.SignatureAlgorithm;
-import jakarta.servlet.http.Cookie;
 
 @Slf4j
 @Component
 public class JwtTokenProvider {
+
   private final SecretKey key;
   private final long validityInMilliseconds;
   private final long refreshValidityInMilliseconds;
-  // 시계 오차 허용(60초) 추가
+
+  // 시계 오차 허용(60초)
   private static final long ALLOWED_CLOCK_SKEW_MS = 60_000L;
 
   public JwtTokenProvider(
       @Value("${jwt.secret-key}") String secretKey,
       @Value("${jwt.expiration-ms}") long validityInMilliseconds,
-      // refresh TTL 주입
-      @Value("${jwt.refresh-expiration-ms:1209600000}") long refreshValidityInMilliseconds
-  ) {
+      @Value("${jwt.refresh-expiration-ms:1209600000}") long refreshValidityInMilliseconds) {
+
     byte[] keyBytes = Base64.getDecoder().decode(secretKey);
     this.key = Keys.hmacShaKeyFor(keyBytes);
     this.validityInMilliseconds = validityInMilliseconds;
     this.refreshValidityInMilliseconds = refreshValidityInMilliseconds;
   }
 
-  // Access 토큰 발급 분리
+  // ===== 발급 =====
+
   public String createAccessToken(UserRepo.UserRow user) {
     Date now = new Date();
     Date validity = new Date(now.getTime() + validityInMilliseconds);
@@ -52,13 +54,11 @@ public class JwtTokenProvider {
         .compact();
   }
 
-  // (호환) 기존 호출부 유지: Access 토큰 발급으로 위임
+  // (호환) 기존 호출부 유지
   public String createToken(UserRepo.UserRow user) {
-    // 기존 메서드는 Access 토큰 발급으로 위임
     return createAccessToken(user);
   }
 
-  // Refresh 토큰 발급
   public String createRefreshToken(UserRepo.UserRow user) {
     Date now = new Date();
     Date validity = new Date(now.getTime() + refreshValidityInMilliseconds);
@@ -72,23 +72,40 @@ public class JwtTokenProvider {
         .compact();
   }
 
-  public String resolveToken(HttpServletRequest request) {
-    String bearerToken = request.getHeader("Authorization");
-    if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-      return bearerToken.substring(7);
+  // ===== 추출 =====
+  // 융합프로젝트 김태형 9주차 OpenAPI 스펙 확정 : 쿠키 기반 인증 정식 지원 (추가)
+  // access_token 쿠키 → Authorization: Bearer 순으로 토큰을 추출
+  public String resolveAccessToken(HttpServletRequest request) { // (추가)
+    // 1) Cookie: access_token
+    if (request.getCookies() != null) {
+      for (Cookie c : request.getCookies()) {
+        if ("access_token".equals(c.getName()) && StringUtils.hasText(c.getValue())) {
+          return c.getValue();
+        }
+      }
     }
-    // 일부 클라이언트가 "Bearer " 없이 순수 토큰만 보낼 때 대비
-    if (StringUtils.hasText(bearerToken)) {
-      return bearerToken.trim();
+    // 2) Header: Authorization
+    String auth = request.getHeader("Authorization");
+    if (StringUtils.hasText(auth)) {
+      return auth.startsWith("Bearer ") ? auth.substring(7) : auth.trim();
     }
     return null;
   }
 
-  // 요청에서 Refresh 토큰 추출(Cookie RT 우선, 그다음 Authorization)
+  // (수정) 기존 resolveToken은 새 메서드로 위임해 호환 유지
+  public String resolveToken(HttpServletRequest request) { // (수정)
+    return resolveAccessToken(request);
+  }
+
+  // 요청에서 Refresh 토큰 추출 (쿠키 RT 우선, 그다음 Authorization)
   public String resolveRefreshToken(HttpServletRequest request) {
     if (request.getCookies() != null) {
       for (Cookie c : request.getCookies()) {
+        // 운영에서 cookie 이름을 refresh_token으로 바꾸면 여기만 맞춰주면 됨
         if ("RT".equals(c.getName()) && StringUtils.hasText(c.getValue())) {
+          return c.getValue();
+        }
+        if ("refresh_token".equals(c.getName()) && StringUtils.hasText(c.getValue())) { // (추가, 호환)
           return c.getValue();
         }
       }
@@ -100,14 +117,16 @@ public class JwtTokenProvider {
     return null;
   }
 
+  // ===== 검증/파싱 =====
+
   public boolean validateToken(String token) {
     try {
-      // 파서에 시계오차 허용을 직접 설정(만료/서명 검증 파서에 일임)
-      Jws<Claims> claims = Jwts.parserBuilder()
-          .setSigningKey(key)
-          .setAllowedClockSkewSeconds(ALLOWED_CLOCK_SKEW_MS / 1000)
-          .build()
-          .parseClaimsJws(token);
+      Jws<Claims> claims =
+          Jwts.parserBuilder()
+              .setSigningKey(key)
+              .setAllowedClockSkewSeconds(ALLOWED_CLOCK_SKEW_MS / 1000)
+              .build()
+              .parseClaimsJws(token);
 
       Date exp = claims.getBody().getExpiration();
       if (exp == null) {
@@ -124,14 +143,14 @@ public class JwtTokenProvider {
     }
   }
 
-  // Refresh 전용 검증
   public boolean validateRefreshToken(String token) {
     try {
-      Jws<Claims> claims = Jwts.parserBuilder()
-          .setSigningKey(key)
-          .setAllowedClockSkewSeconds(ALLOWED_CLOCK_SKEW_MS / 1000)
-          .build()
-          .parseClaimsJws(token);
+      Jws<Claims> claims =
+          Jwts.parserBuilder()
+              .setSigningKey(key)
+              .setAllowedClockSkewSeconds(ALLOWED_CLOCK_SKEW_MS / 1000)
+              .build()
+              .parseClaimsJws(token);
       Claims body = claims.getBody();
       if (!"refresh".equals(body.get("typ"))) {
         log.warn("[JWT] not a refresh token");
@@ -148,13 +167,13 @@ public class JwtTokenProvider {
   }
 
   public String getEmail(String token) {
-    // validate와 동일 파서(시계오차 허용)로 일관 파싱
-    Claims payload = Jwts.parserBuilder()
-        .setSigningKey(key)
-        .setAllowedClockSkewSeconds(ALLOWED_CLOCK_SKEW_MS / 1000)
-        .build()
-        .parseClaimsJws(token)
-        .getBody();
+    Claims payload =
+        Jwts.parserBuilder()
+            .setSigningKey(key)
+            .setAllowedClockSkewSeconds(ALLOWED_CLOCK_SKEW_MS / 1000)
+            .build()
+            .parseClaimsJws(token)
+            .getBody();
     String emailClaim = payload.get("email", String.class);
     return (emailClaim != null && !emailClaim.isBlank()) ? emailClaim : payload.getSubject();
   }

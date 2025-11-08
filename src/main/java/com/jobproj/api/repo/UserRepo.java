@@ -67,11 +67,12 @@ public class UserRepo {
             + "VALUES (?, ?, ?, ?)";
     jdbc.update(sql, email, encodedPassword, name, role.name());
   }
+
   // 8주차 추가: users_id로 사용자 상세 정보 조회
   public Optional<UserRow> findById(Long usersId) {
     String sql =
-            "SELECT users_id, users_email, users_password_hash, "
-                    + "users_name, users_role FROM jobproject_users WHERE users_id=?";
+        "SELECT users_id, users_email, users_password_hash, "
+            + "users_name, users_role FROM jobproject_users WHERE users_id=?";
     return jdbc.query(sql, new UserRow(), usersId).stream().findFirst();
   }
 }

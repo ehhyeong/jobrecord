@@ -80,9 +80,7 @@ public class ResumeRepository {
         FROM resume
         WHERE resume_id = :id AND users_id = :usersId
         """;
-      var params = new MapSqlParameterSource()
-          .addValue("id", id)
-          .addValue("usersId", usersId);
+      var params = new MapSqlParameterSource().addValue("id", id).addValue("usersId", usersId);
       return Optional.ofNullable(jdbc.queryForObject(sql, params, MAPPER));
     } catch (EmptyResultDataAccessException e) {
       return Optional.empty();
@@ -91,14 +89,14 @@ public class ResumeRepository {
 
   // owner 빠른 확인(404/403 분기용)
   public Optional<Long> findOwnerId(Long resumeId) {
-  try {
-    String sql = "SELECT users_id FROM resume WHERE resume_id = :id";
-    Long uid = jdbc.queryForObject(sql, Map.of("id", resumeId), Long.class);
-    return Optional.ofNullable(uid);
-  } catch (EmptyResultDataAccessException e) {
-    return Optional.empty();
+    try {
+      String sql = "SELECT users_id FROM resume WHERE resume_id = :id";
+      Long uid = jdbc.queryForObject(sql, Map.of("id", resumeId), Long.class);
+      return Optional.ofNullable(uid);
+    } catch (EmptyResultDataAccessException e) {
+      return Optional.empty();
+    }
   }
-}
 
   // --- 기존 update/delete(소유권 미검증): 남겨두되 서비스에서 사용하지 않도록 함
   public int update(Long id, UpdateRequest req) {
@@ -151,9 +149,8 @@ public class ResumeRepository {
   // 소유자 조건 포함 삭제
   public int deleteByOwner(Long id, Long usersId) {
     String sql = "DELETE FROM resume WHERE resume_id = :id AND users_id = :usersId";
-    return jdbc.update(sql, new MapSqlParameterSource()
-        .addValue("id", id)
-        .addValue("usersId", usersId));
+    return jdbc.update(
+        sql, new MapSqlParameterSource().addValue("id", id).addValue("usersId", usersId));
   }
 
   public List<Response> search(PageRequest pr, Long usersId, String keyword) {

@@ -52,13 +52,13 @@ public class ResumeDto {
     public LocalDateTime updatedAt;
 
     public Response(
-            Long resumeId,
-            Long usersId,
-            String title,
-            String summary,
-            Boolean isPublic,
-            LocalDateTime createdAt,
-            LocalDateTime updatedAt) {
+        Long resumeId,
+        Long usersId,
+        String title,
+        String summary,
+        Boolean isPublic,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt) {
       this.resumeId = resumeId;
       this.usersId = usersId;
       this.title = title;
