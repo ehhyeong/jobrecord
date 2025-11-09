@@ -8,10 +8,10 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.EmptyResultDataAccessException;                 // (추가)
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;             // (추가)
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,12 +23,6 @@ import org.springframework.web.multipart.MultipartException;
 // springdoc 내부 컨트롤러(/v3/api-docs 등)에는 적용되지 않도록 우리 패키지로만 제한
 @RestControllerAdvice(basePackages = "com.jobproj.api")
 public class GlobalExceptionHandler {
-
-    // 융합프로젝트 김태형 9주차 OpenAPI 스펙 확정(핵심 도메인 + 오류 예시)
-    // - 업로드 한도 초과: 413으로 변경 (수정)
-    // - 접근 거부(스프링 시큐리티): 403 A002 추가 (추가)
-    // - 리소스 미존재: 404 NOT_FOUND(NoSuchElement/EmptyResult) 매핑 (수정)
-
     /** (3) Bean Validation 실패 → 400 + fieldErrors[] */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Map<String, List<Map<String, String>>>>>
@@ -57,7 +51,7 @@ public class GlobalExceptionHandler {
         );
     }
 
-    /** (추가) 접근 거부(인가 실패) → 403 A002 */
+    /** 접근 거부(인가 실패) → 403 A002 */
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiResponse<Void>> handleAccessDenied(AccessDeniedException e) {
         log.warn("[403] AccessDenied: {}", e.getMessage());
@@ -67,7 +61,7 @@ public class GlobalExceptionHandler {
         );
     }
 
-    /** (수정) 업로드 용량 초과 → 413 (multipart 10MB 제한) */
+    /** 업로드 용량 초과 → 413 (multipart 10MB 제한) */
     @ExceptionHandler({
             MaxUploadSizeExceededException.class, // Spring multipart 한도 초과
             MultipartException.class,             // 일부 환경에서 래핑 가능

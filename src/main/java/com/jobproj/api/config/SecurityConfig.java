@@ -51,6 +51,10 @@ public class SecurityConfig {
                     // refresh/logout 명시 허용
                     .requestMatchers("/auth/refresh", "/auth/logout")
                     .permitAll()
+                    // 잡코리아 더미 엔드포인트 : 데모 동안 공개 접근
+                    // 운영 전환 시에는 아래 permitAll()을 주석 처리하고 hasRole("USER") 등으로 제한 권장
+                    .requestMatchers("/jobs/**").permitAll() // (추가)
+                    // .requestMatchers("/jobs/**").hasRole("USER") // (추가) 운영 시 권장 토글
                     // 프리플라이트(브라우저 OPTIONS)
                     .requestMatchers(HttpMethod.OPTIONS, "/**")
                     .permitAll()
@@ -68,12 +72,13 @@ public class SecurityConfig {
                     .authenticated())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        // 인증/인가 실패시 JSON 바디로 401/403 내려주기 (수정)
+        // 인증/인가 실패시 JSON 바디로 401/403 내려주기
         // 여기 entry point는 "AuthenticationException"일 때만 작동 -> 비인증 예외를 401로 덮어쓰지 않음 (설명 추가)
         .exceptionHandling(
             ex ->
                 ex.authenticationEntryPoint(
                         (req, res, e) -> { // 401
+                          // 공통 에러 포맷에 맞추려면 ApiResponse.fail(...)로 교체 고려
                           res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                           res.setContentType("application/json;charset=UTF-8");
                           res.getWriter()
@@ -84,6 +89,7 @@ public class SecurityConfig {
                         })
                     .accessDeniedHandler(
                         (req, res, e) -> { // 403
+                          // 공통 에러 포맷에 맞추려면 ApiResponse.fail(...)로 교체 고려
                           res.setStatus(HttpServletResponse.SC_FORBIDDEN);
                           res.setContentType("application/json;charset=UTF-8");
                           res.getWriter()
@@ -98,7 +104,7 @@ public class SecurityConfig {
     return http.build();
   }
 
-  /** 개발용 CORS 설정 */
+  /** 개발용 CORS 설정 (기존 유지) */
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration cfg = new CorsConfiguration();

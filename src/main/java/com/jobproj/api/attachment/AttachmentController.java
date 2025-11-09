@@ -9,18 +9,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-// 융합프로젝트 김태형 9주차 OpenAPI 스펙 확정(핵심 도메인 + 오류 예시) : 파일 업/다운 규격 및 413 문서화 (추가)
-import io.swagger.v3.oas.annotations.Parameter;                 // (유지)
-import io.swagger.v3.oas.annotations.media.Content;             // (유지)
-import io.swagger.v3.oas.annotations.media.Schema;              // (유지)
-import io.swagger.v3.oas.annotations.media.ArraySchema;         // (유지)
-// Swagger ApiResponse는 import 하지 않음 (충돌 방지)
-// import io.swagger.v3.oas.annotations.responses.ApiResponse;  // (삭제)
-import io.swagger.v3.oas.annotations.responses.ApiResponses;    // (유지)
-// Swagger RequestBody도 스프링과 이름이 같아 풀네임 사용 권장
-// import io.swagger.v3.oas.annotations.parameters.RequestBody; // (삭제)
-import io.swagger.v3.oas.annotations.headers.Header;            // (유지)
-import io.swagger.v3.oas.annotations.security.SecurityRequirement; // (유지)
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @Tag(name = "파일", description = "첨부 파일 API")
 @RestController
@@ -33,12 +28,6 @@ public class AttachmentController {
         this.svc = svc;
     }
 
-    /**
-     * - 파일 업로드 (multipart/form-data)
-     * - Swagger에서 파일선택 UI가 보이도록 consumes 지정
-     * - /attachments, /api/attachments 동일 메서드 처리
-     * - resumeId 옵션
-     */
     @Operation(
             summary = "첨부 업로드",
             description = "multipart/form-data로 파일 업로드 후 첨부 ID 반환",

@@ -15,11 +15,10 @@ spring:
 
   jackson:
     serialization:
-      # 융합프로젝트 김태형 9주차 OpenAPI 스펙 확정(핵심 도메인 + 오류 예시) : 타임스탬프 직렬화 비활성 (수정)
       write-dates-as-timestamps: false
 
   servlet:
-    # 업로드 최대 용량 10MB 설정 (수정)
+    # 업로드 최대 용량 10MB 설정
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
@@ -43,7 +42,6 @@ jwt:
   refresh-expiration-ms: 1209600000
 
 springdoc:
-  # 융합프로젝트 김태형 9주차 OpenAPI 스펙 확정(핵심 도메인 + 오류 예시) : 스웨거 문서/캐시/경로 설정 (추가)
   api-docs:
     enabled: true
   cache:
