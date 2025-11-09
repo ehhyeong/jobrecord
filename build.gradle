@@ -45,6 +45,10 @@ dependencies {
 
     // ✅ Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    //Flyway 의존성 추가
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-mysql'
 }
 
 tasks.withType(JavaCompile).configureEach {

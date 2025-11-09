@@ -1,4 +1,4 @@
--- Run after 01_schema.sql
+-- Run after V1__Init_Tables.sql.sql
 INSERT INTO jobpoject_users
 (users_email, users_password_hash, users_name, users_phone,
  users_role, users_status)

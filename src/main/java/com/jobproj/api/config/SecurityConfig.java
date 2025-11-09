@@ -45,58 +45,53 @@ public class SecurityConfig {
                     // 헬스체크
                     .requestMatchers("/api/actuator/**")
                     .permitAll()
+
+                    // [최종 수정본] AuthCtrl 컨트롤러 주소와 일치시킴
                     // 로그인/회원가입/리프레시/로그아웃은 토큰 없이 허용
-                    .requestMatchers("/auth/login", "/auth/signup")
+                    .requestMatchers("/auth/**") // "/api" 접두사 없이 매칭
                     .permitAll()
-                    // refresh/logout 명시 허용
-                    .requestMatchers("/auth/refresh", "/auth/logout")
-                    .permitAll()
+
                     // 잡코리아 더미 엔드포인트 : 데모 동안 공개 접근
                     // 운영 전환 시에는 아래 permitAll()을 주석 처리하고 hasRole("USER") 등으로 제한 권장
-                    .requestMatchers("/jobs/**").permitAll() // (추가)
-                    // .requestMatchers("/jobs/**").hasRole("USER") // (추가) 운영 시 권장 토글
+                    .requestMatchers("/jobs/**").permitAll()
+                    // .requestMatchers("/jobs/**").hasRole("USER") // 운영 시 권장 토글
+
                     // 프리플라이트(브라우저 OPTIONS)
                     .requestMatchers(HttpMethod.OPTIONS, "/**")
                     .permitAll()
+
                     //  - 기본은 인증 필요. 공개 다운로드로 바꾸려면 `.permitAll()`로 변경.
                     .requestMatchers(
                         HttpMethod.GET, "/attachments/*/download", "/api/attachments/*/download")
                     .authenticated()
-                    // 업로드는 인증 필요하게 보호하려면 아래 주석 해제
-                    // .requestMatchers(HttpMethod.POST, "/attachments",
-                    // "/api/attachments").authenticated()
-                    // 관리자 전용 API가 있다면 예시처럼 보호
-                    // .requestMatchers("/admin/**").hasRole("ADMIN")
+
                     // 나머지는 인증 필요
                     .anyRequest()
                     .authenticated())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         // 인증/인가 실패시 JSON 바디로 401/403 내려주기
-        // 여기 entry point는 "AuthenticationException"일 때만 작동 -> 비인증 예외를 401로 덮어쓰지 않음 (설명 추가)
         .exceptionHandling(
             ex ->
                 ex.authenticationEntryPoint(
                         (req, res, e) -> { // 401
-                          // 공통 에러 포맷에 맞추려면 ApiResponse.fail(...)로 교체 고려
                           res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                           res.setContentType("application/json;charset=UTF-8");
                           res.getWriter()
                               .write(
                                   """
-                  {"errorCode":"A001","message":"인증이 필요합니다.","status":401}
-                  """);
+                                  {"errorCode":"A001","message":"인증이 필요합니다.","status":401}
+                                  """);
                         })
                     .accessDeniedHandler(
                         (req, res, e) -> { // 403
-                          // 공통 에러 포맷에 맞추려면 ApiResponse.fail(...)로 교체 고려
                           res.setStatus(HttpServletResponse.SC_FORBIDDEN);
                           res.setContentType("application/json;charset=UTF-8");
                           res.getWriter()
                               .write(
                                   """
-                  {"errorCode":"A002","message":"권한이 없습니다.","status":403}
-                  """);
+                                  {"errorCode":"A002","message":"권한이 없습니다.","status":403}
+                                  """);
                         }))
         // JWT 필터 체인에 등록
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

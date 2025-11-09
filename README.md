@@ -29,7 +29,7 @@
 docker compose up -d
 ```
 
-- `./db/01_schema.sql`로 스키마 자동 생성  
+- `./db/V1__Init_Tables.sql.sql`로 스키마 자동 생성  
 - (선택) `./sql/02_sample_data.sql`을 실행해 샘플 데이터 추가
 
 ### 2) IntelliJ로 열기
@@ -132,7 +132,7 @@ jobrecord_backend/
  ├── build.gradle
  ├── docker-compose.yml
  ├── db/
- │    ├── 01_schema.sql
+ │    ├── V1__Init_Tables.sql.sql
  │    └── 02_sample_data.sql
  ├── sql/
  │    └── 02_sample_data.sql                 # (선택) 샘플 데이터

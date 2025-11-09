@@ -1,7 +1,7 @@
 -- DROP TABLE IF EXISTS `users`,`resume`,`education`,`experience`,`project`,
 --                      `skill`,`resume_skill`,`attachment`,`company`,
 --                      `job_posting`,`application`,`job_bookmark`;
-
+-- 9주차 수정(2233076)-파일명 수정 및 파일 경로 수정
 -- 세션 설정
 SET NAMES utf8mb4;
 SET time_zone = '+09:00';
