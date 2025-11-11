@@ -28,6 +28,12 @@ public class JwtTokenProvider {
   // 시계 오차 허용(60초)
   private static final long ALLOWED_CLOCK_SKEW_MS = 60_000L;
 
+  // 쿠키 이름 상수
+  private static final String ACCESS_TOKEN_COOKIE = "access_token";
+  private static final String REFRESH_TOKEN_COOKIE = "refresh_token";
+  // (호환) 과거 RT 명칭도 허용
+  private static final String LEGACY_RT_COOKIE = "RT";
+
   public JwtTokenProvider(
       @Value("${jwt.secret-key}") String secretKey,
       @Value("${jwt.expiration-ms}") long validityInMilliseconds,
@@ -72,49 +78,27 @@ public class JwtTokenProvider {
         .compact();
   }
 
-  // ===== 추출 =====
-  // 융합프로젝트 김태형 9주차 OpenAPI 스펙 확정 : 쿠키 기반 인증 정식 지원 (추가)
-  // access_token 쿠키 → Authorization: Bearer 순으로 토큰을 추출
-  public String resolveAccessToken(HttpServletRequest request) { // (추가)
-    // 1) Cookie: access_token
-    if (request.getCookies() != null) {
-      for (Cookie c : request.getCookies()) {
-        if ("access_token".equals(c.getName()) && StringUtils.hasText(c.getValue())) {
-          return c.getValue();
-        }
-      }
-    }
-    // 2) Header: Authorization
-    String auth = request.getHeader("Authorization");
-    if (StringUtils.hasText(auth)) {
-      return auth.startsWith("Bearer ") ? auth.substring(7) : auth.trim();
-    }
-    return null;
+  // ===== 추출 (쿠키 전용) =====
+
+  /** access_token 쿠키만 사용(헤더 경로 제거) */
+  public String resolveAccessToken(HttpServletRequest request) {
+    Cookie c = getCookie(request, ACCESS_TOKEN_COOKIE);
+    return (c != null && StringUtils.hasText(c.getValue())) ? c.getValue() : null;
   }
 
-  // (수정) 기존 resolveToken은 새 메서드로 위임해 호환 유지
-  public String resolveToken(HttpServletRequest request) { // (수정)
+  /** (호환) 기존 resolveToken은 쿠키 전용 메서드로 위임 */
+  public String resolveToken(HttpServletRequest request) {
     return resolveAccessToken(request);
   }
 
-  // 요청에서 Refresh 토큰 추출 (쿠키 RT 우선, 그다음 Authorization)
+  /** refresh_token 쿠키만 사용(헤더 경로 제거). 과거 RT 명칭도 허용 */
   public String resolveRefreshToken(HttpServletRequest request) {
-    if (request.getCookies() != null) {
-      for (Cookie c : request.getCookies()) {
-        // 운영에서 cookie 이름을 refresh_token으로 바꾸면 여기만 맞춰주면 됨
-        if ("RT".equals(c.getName()) && StringUtils.hasText(c.getValue())) {
-          return c.getValue();
-        }
-        if ("refresh_token".equals(c.getName()) && StringUtils.hasText(c.getValue())) { // (추가, 호환)
-          return c.getValue();
-        }
-      }
+    Cookie c = getCookie(request, REFRESH_TOKEN_COOKIE);
+    if (c != null && StringUtils.hasText(c.getValue())) {
+      return c.getValue();
     }
-    String auth = request.getHeader("Authorization");
-    if (StringUtils.hasText(auth)) {
-      return auth.startsWith("Bearer ") ? auth.substring(7) : auth.trim();
-    }
-    return null;
+    Cookie legacy = getCookie(request, LEGACY_RT_COOKIE);
+    return (legacy != null && StringUtils.hasText(legacy.getValue())) ? legacy.getValue() : null;
   }
 
   // ===== 검증/파싱 =====
@@ -176,5 +160,14 @@ public class JwtTokenProvider {
             .getBody();
     String emailClaim = payload.get("email", String.class);
     return (emailClaim != null && !emailClaim.isBlank()) ? emailClaim : payload.getSubject();
+  }
+
+  // ===== util =====
+  private Cookie getCookie(HttpServletRequest request, String name) {
+    if (request == null || request.getCookies() == null) return null;
+    for (Cookie c : request.getCookies()) {
+      if (name.equals(c.getName())) return c;
+    }
+    return null;
   }
 }

@@ -33,86 +33,70 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.csrf(csrf -> csrf.disable())
-        .cors(cors -> {}) // CorsConfigurationSource 빈을 쓰도록 활성화
-        .authorizeHttpRequests(
-            auth ->
-                auth
-                    // 스웨거/문서
-                    .requestMatchers(
-                        "/v3/api-docs/**", "/swagger-ui/**",
-                        "/swagger-ui.html", "/webjars/**")
-                    .permitAll()
-                    // 헬스체크
-                    .requestMatchers("/api/actuator/**")
-                    .permitAll()
-
-                    // [최종 수정본] AuthCtrl 컨트롤러 주소와 일치시킴
-                    // 로그인/회원가입/리프레시/로그아웃은 토큰 없이 허용
-                    .requestMatchers("/auth/**") // "/api" 접두사 없이 매칭
-                    .permitAll()
-
-                    // 잡코리아 더미 엔드포인트 : 데모 동안 공개 접근
-                    // 운영 전환 시에는 아래 permitAll()을 주석 처리하고 hasRole("USER") 등으로 제한 권장
-                    .requestMatchers("/jobs/**").permitAll()
-                    // .requestMatchers("/jobs/**").hasRole("USER") // 운영 시 권장 토글
-
-                    // 프리플라이트(브라우저 OPTIONS)
-                    .requestMatchers(HttpMethod.OPTIONS, "/**")
-                    .permitAll()
-
-                    //  - 기본은 인증 필요. 공개 다운로드로 바꾸려면 `.permitAll()`로 변경.
-                    .requestMatchers(
-                        HttpMethod.GET, "/attachments/*/download", "/api/attachments/*/download")
-                    .authenticated()
-
-                    // 나머지는 인증 필요
-                    .anyRequest()
-                    .authenticated())
-        .sessionManagement(
-            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        // 인증/인가 실패시 JSON 바디로 401/403 내려주기
-        .exceptionHandling(
-            ex ->
-                ex.authenticationEntryPoint(
-                        (req, res, e) -> { // 401
-                          res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                          res.setContentType("application/json;charset=UTF-8");
-                          res.getWriter()
-                              .write(
-                                  """
-                                  {"errorCode":"A001","message":"인증이 필요합니다.","status":401}
-                                  """);
-                        })
-                    .accessDeniedHandler(
-                        (req, res, e) -> { // 403
-                          res.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                          res.setContentType("application/json;charset=UTF-8");
-                          res.getWriter()
-                              .write(
-                                  """
-                                  {"errorCode":"A002","message":"권한이 없습니다.","status":403}
-                                  """);
-                        }))
-        // JWT 필터 체인에 등록
+        .cors(cors -> {}) // 아래 CorsConfigurationSource 빈만 사용
+        .authorizeHttpRequests(auth -> auth
+            // Swagger
+            .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/webjars/**").permitAll()
+            // Actuator (health)
+            .requestMatchers("/api/actuator/**").permitAll()
+            // Auth (login/signup/refresh/logout)
+            .requestMatchers("/auth/**").permitAll()
+            // Jobs 더미 (데모 기간 공개)
+            .requestMatchers("/jobs/**").permitAll()
+            // Preflight
+            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+            // 다운로드는 인증 필요(공개로 바꾸려면 permitAll)
+            .requestMatchers(HttpMethod.GET, "/attachments/*/download", "/api/attachments/*/download").authenticated()
+            // 그 외는 인증
+            .anyRequest().authenticated())
+        .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .exceptionHandling(ex -> ex
+            .authenticationEntryPoint((req, res, e) -> { // 401
+              res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+              res.setContentType("application/json;charset=UTF-8");
+              res.getWriter().write("""
+                  {"errorCode":"A001","message":"인증이 필요합니다.","status":401}
+                  """);
+            })
+            .accessDeniedHandler((req, res, e) -> { // 403
+              res.setStatus(HttpServletResponse.SC_FORBIDDEN);
+              res.setContentType("application/json;charset=UTF-8");
+              res.getWriter().write("""
+                  {"errorCode":"A002","message":"권한이 없습니다.","status":403}
+                  """);
+            }))
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }
 
-  /** 개발용 CORS 설정 (기존 유지) */
+  /** 쿠키 기반 CORS (credentials + 화이트리스트 고정) */
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration cfg = new CorsConfiguration();
-    cfg.setAllowedOrigins(
-        List.of(
-            "http://localhost:3000",
-            "http://127.0.0.1:3000",
-            "http://localhost:5173",
-            "http://127.0.0.1:5173"));
+
+    // 개발 + (운영 도메인 추가 주석)
+    cfg.setAllowedOrigins(List.of(
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173"
+        // "https://front.example.com" // 운영 배포 시 추가
+    ));
+
     cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-    cfg.setAllowedHeaders(List.of("*"));
-    cfg.setExposedHeaders(List.of("Authorization", "Location", "Content-Disposition"));
+
+    // 꼭 필요한 헤더만 허용(불가피하면 "*"로 전환 가능)
+    cfg.setAllowedHeaders(List.of("Content-Type", "X-Requested-With"));
+
+    // 파일 다운로드 파일명 노출만 필요
+    cfg.setExposedHeaders(List.of("Content-Disposition"));
+
+    // 쿠키 인증 핵심
     cfg.setAllowCredentials(true);
+
+    // 프리플라이트 캐시(1시간)
+    cfg.setMaxAge(3600L);
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", cfg);

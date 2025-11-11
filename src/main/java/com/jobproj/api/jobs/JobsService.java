@@ -3,14 +3,23 @@ package com.jobproj.api.jobs;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class JobsService {
 
+    /**
+     * 추천 공고 더미 생성.
+     * - 최소 limit 개수 보장 (샘플 2개를 기반으로 패턴 확장)
+     * - postedAt, id, 급여가 항목마다 달라지도록 변형
+     */
     public List<JobDto> recommend(int limit) {
+        int safeLimit = Math.max(1, Math.min(limit, 50)); // 1~50
         var now = LocalDateTime.now();
-        var list = List.of(
+
+        // 베이스 샘플 2개
+        var base = List.of(
             JobDto.builder()
                 .id("JK-2025-0001")
                 .title("Spring 백엔드 개발자 (신입~경력)")
@@ -60,22 +69,88 @@ public class JobsService {
                 .eDate("20251101")
                 .build()
         );
-        return list.stream().limit(Math.max(1, limit)).toList();
+
+        if (safeLimit <= base.size()) {
+            return base.subList(0, safeLimit);
+        }
+
+        var list = new ArrayList<JobDto>(safeLimit);
+        list.addAll(base);
+
+        // base를 패턴 복제하여 safeLimit까지 채우기
+        for (int i = base.size(); i < safeLimit; i++) {
+            var b = base.get(i % base.size());
+            int idx = i + 1;
+            int salaryMin = (b.getSalaryMin() != null ? b.getSalaryMin() : 4000) + (idx % 5) * 100;
+            int salaryMax = Math.max(salaryMin + 1000, (b.getSalaryMax() != null ? b.getSalaryMax() : 7000) + (idx % 3) * 150);
+
+            list.add(JobDto.builder()
+                .id("JK-2025-" + String.format("%04d", idx + 1))
+                .title(b.getTitle() + " #" + idx)
+                .company(idx % 2 == 0 ? b.getCompany() : "잡코리아")
+                .location(idx % 3 == 0 ? "서울" : (idx % 3 == 1 ? "경기" : "부산"))
+                .salaryMin(salaryMin)
+                .salaryMax(salaryMax)
+                .experience((idx % 3 == 0) ? ExperienceLevel.JUNIOR :
+                            (idx % 3 == 1) ? ExperienceLevel.MID : ExperienceLevel.SENIOR)
+                .tags((idx % 2 == 0) ? b.getTags() : List.of("Java", "Spring", "JPA"))
+                .matchScore(Math.round((70 + (idx % 30)) * 10.0) / 10.0)
+                .postedAt(now.minusDays(idx % 10).minusHours(idx % 24))
+                .applyUrl(b.getApplyUrl())
+                .source("JOBKOREA")
+                .sourceUrl(b.getSourceUrl())
+                .giNo(b.getGiNo() + idx)
+                .areaCodes(b.getAreaCodes())
+                .jobTypes(b.getJobTypes())
+                .partNo(b.getPartNo())
+                .career(Math.min(10, b.getCareer() != null ? b.getCareer() + (idx % 3) : (idx % 6)))
+                .pay(b.getPay())
+                .payTerm(b.getPayTerm())
+                .endDate(b.getEndDate())
+                .wDate(b.getWDate())
+                .eDate(b.getEDate())
+                .build());
+        }
+        return list;
     }
 
+    /**
+     * 간단 검색(q) + 페이지네이션(0-base)
+     * - q: title/company/location/tags에 포함되면 매칭 (대소문자 무시)
+     * - size: 1~50, page: 0 이상
+     */
     public JobSearchResponse search(String q, int page, int size) {
-        var all = recommend(50);
-        int realSize = Math.min(Math.max(size, 1), 100);
-        int from = Math.max(0, page * realSize);
-        int to = Math.min(all.size(), from + realSize);
-        var slice = from >= all.size() ? List.<JobDto>of() : all.subList(from, to);
-        int totalPages = (int) Math.ceil(all.size() / (double) realSize);
+        int safeSize = Math.max(1, Math.min(size, 50));
+        int safePage = Math.max(0, page);
+
+        // 검색 풀: 추천 50개 생성
+        var pool = recommend(50);
+
+        // q 필터
+        List<JobDto> filtered;
+        if (q == null || q.isBlank()) {
+            filtered = pool;
+        } else {
+            String term = q.toLowerCase();
+            filtered = pool.stream().filter(j ->
+                (j.getTitle() != null && j.getTitle().toLowerCase().contains(term)) ||
+                (j.getCompany() != null && j.getCompany().toLowerCase().contains(term)) ||
+                (j.getLocation() != null && j.getLocation().toLowerCase().contains(term)) ||
+                (j.getTags() != null && j.getTags().stream().anyMatch(t -> t != null && t.toLowerCase().contains(term)))
+            ).toList();
+        }
+
+        int total = filtered.size();
+        int from = Math.min(safePage * safeSize, total);
+        int to = Math.min(from + safeSize, total);
+        var slice = (from >= to) ? List.<JobDto>of() : filtered.subList(from, to);
+        int totalPages = (int) Math.ceil(total / (double) safeSize);
 
         return JobSearchResponse.builder()
-            .totalElements(all.size())
+            .totalElements(total)
             .totalPages(totalPages)
-            .page(page)
-            .size(realSize)
+            .page(safePage)
+            .size(safeSize)
             .content(slice)
             .build();
     }
