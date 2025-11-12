@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>회원가입 페이지</title>
+
+  <link rel="stylesheet" href="/css/signup.css" th:href="@{/css/signup.css}">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="signup-container">
+    <header class="header-section">
+      <h1>Job Record</h1>
+      <h2>회원가입</h2>
+      <p>회원가입을 위해 정보를 입력해주세요</p>
+    </header>
+
+    <!-- id 부여 + novalidate(브라우저 기본 검증 끔, JS로만 검증) -->
+    <form id="signup-form" class="signup-form" action="" method="post" novalidate>
+      <div class="input-group">
+        <label for="email">*E-Mail</label>
+        <input type="email" id="email" name="email" />
+      </div>
+
+      <div class="input-group">
+        <label for="name">*이름</label>
+        <input type="text" id="name" name="name" />
+      </div>
+
+      <div class="input-group">
+        <label for="password">*비밀번호</label>
+        <input type="password" id="password" name="password" />
+      </div>
+
+      <div class="input-group">
+        <label for="password-confirm">*비밀번호 확인</label>
+        <input type="password" id="password-confirm" name="password-confirm" />
+        <!-- 오류 메시지 표시 위치 -->
+        <span id="password-error" class="error-text" aria-live="polite"></span>
+      </div>
+
+      <div class="terms-group">
+        <input type="checkbox" id="terms" />
+        <label for="terms">이용약관 개인정보 수집 및 정보이용에 동의합니다.</label>
+      </div>
+
+      <!-- 초기 비활성화 -->
+      <button type="submit" class="signup-button" disabled>가입하기</button>
+    </form>
+  </div>
+
+  <!-- ✅ 정적 리소스는 /js/... 로 -->
+  <script src="/js/env.js"></script>
+  <script src="/js/signup.js"></script>
+</body>
+</html>

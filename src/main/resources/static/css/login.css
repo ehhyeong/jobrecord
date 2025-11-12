@@ -1,0 +1,161 @@
+/* --- 기본 설정 (초기화) --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; 
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    /* 'pattern.jpg' 파일이 이 css 파일과 같은 폴더에 있어야 합니다 */
+    background-image: url("/img/office.jpg"); 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: rgba(0, 0, 0, 0.14); /* (1 - 0.86 opacity) */
+    background-blend-mode: multiply;
+
+    /* --- Flexbox 중앙 정렬 --- */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* --- 흰색 박스 (login-container) --- */
+.login-container {
+    width: 100%;
+    max-width: 650px; /* XD 코드 기준 (35% ~ 34%) */
+    padding: 60px 80px;
+    background: #FFFFFF;
+    border: 1px solid #707070;
+    border-radius: 8px; /* XD 디자인에는 없지만 추가하는 것이 좋습니다 */
+    
+    display: flex;
+    flex-direction: column; /* 세로로 쌓기 */
+    align-items: center;    /* 가로 중앙 정렬 */
+}
+
+/* 1. 제목/부제목 영역 */
+.header-section {
+    text-align: center;
+    margin-bottom: 40px;
+}
+.header-section h1 {
+    font-size: 60px;
+    font-weight: 700;
+    color: #000000;
+}
+.header-section h2 {
+    font-size: 40px;
+    font-weight: 400;
+    color: #000000;
+    margin-top: 10px;
+}
+.header-section p {
+    font-size: 30px;
+    color: #B9B9B9;
+    margin-top: 20px;
+}
+
+/* 2. 로그인 폼 */
+.login-form {
+    width: 100%;
+    margin-bottom: 30px;
+}
+.input-group {
+    width: 100%;
+    margin-bottom: 25px;
+    /* 라벨과 입력창을 분리 */
+}
+.input-group label {
+    font-size: 15px;
+    color: #B9B9B9;
+    display: block;
+    margin-bottom: 10px;
+}
+/* 아이콘과 입력창을 묶는 래퍼 */
+.input-wrapper {
+    position: relative; /* 아이콘을 'absolute'로 띄우기 위한 기준 */
+}
+/* 아이콘 스타일 (사람, 자물쇠) */
+.input-wrapper i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #B9B9B9; /* XD의 opacity 대신 회색 처리 */
+    font-size: 18px;
+}
+/* 입력창 스타일 */
+.input-wrapper input {
+    width: 100%;
+    /* XD의 '사각형 3' (흰색 박스) 스타일 */
+    background: #FFFFFF;
+    border: 1px solid #707070;
+    border-radius: 4px; /* 약간의 둥근 모서리 */
+    
+    padding: 16px 16px 16px 45px; /* 아이콘을 위한 왼쪽 여백 */
+    font-size: 16px;
+}
+.input-wrapper input:focus {
+    outline: none;
+    border-color: #0055FF; /* 클릭 시 파란색 (보너스) */
+}
+
+/* 3. 로그인 버튼 */
+.login-button {
+    width: 100%;
+    padding: 15px 0;
+    font-size: 30px;
+    font-weight: 400;
+    
+    /* 비활성화(disabled) 상태의 디자인 */
+    background: #E1E1E1;
+    border: 1px solid #707070;
+    color: #5A5A5A;
+    border-radius: 4px;
+    
+    cursor: not-allowed; 
+}
+/* (나중에 JS로 .active 클래스가 추가되면 활성화) */
+.login-button.active {
+    background: #0055FF;
+    color: #FFFFFF;
+    border-color: #0055FF;
+    cursor: pointer;
+}
+
+/* 4. SNS 로그인 */
+.sns-login {
+    font-size: 20px;
+    color: #B9B9B9;
+    margin-bottom: 30px;
+}
+
+/* 5. 하단 링크 (회원가입, 비번찾기) */
+.links-section {
+    text-align: center;
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+.links-section p {
+    color: #8A8A8A;
+}
+.links-section a {
+    color: #0055FF;
+    text-decoration: underline;
+    font-weight: 600; /* 링크 글씨 강조 */
+}
+.links-section a:hover {
+    text-decoration: none;
+}
+
+/* 6. 약관 */
+.terms-section {
+    font-size: 12px;
+    color: #8A8A8A;
+    text-align: center;
+    line-height: 1.5;
+}
