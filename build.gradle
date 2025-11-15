@@ -38,6 +38,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.security:spring-security-crypto'
 
+    // Spring Boot mail 2233076 10주차 추가
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    // Spring Boot Data Redis 2233076 10주차 추가
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+
     // ✅ View (templates/home.html 렌더링용)
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 

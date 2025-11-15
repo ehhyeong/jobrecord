@@ -4,6 +4,24 @@ server:
     max-swallow-size: -1
 
 spring:
+  # 2233076 10주차: 이메일 발송(SMTP) 설정
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: #"여기에-본인-구글-이메일-입력@gmail.com"
+    password: #"여기에-구글-앱-비밀번호-입력" 구글 계정 비밀번호가 아닌 앱 비밀번호를 따로 발급받아 적어야함
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  # 2233076 10주차 : Redis 설정 추가
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+
   web:
     resources:
       add-mappings: true   # 정적 리소스 매핑 활성 (안심용)

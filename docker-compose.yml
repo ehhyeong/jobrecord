@@ -1,11 +1,10 @@
-﻿services:
+﻿version: "3.8"
+services:
   mysql8:
     image: mysql:8.4
     container_name: mysql8
     ports:
       - "3307:3306"
-
-
     environment:
       MYSQL_DATABASE: jobproj_db
       MYSQL_USER: db_user
@@ -16,5 +15,15 @@
       - ./db/init:/docker-entrypoint-initdb.d
       - mysql-data:/var/lib/mysql
 
+  # 2233076 10주차 추가 (Redis 서비스)
+  redis:
+    image: redis:latest
+    container_name: jobrecord-redis # (수정) 컨테이너 이름
+    ports:
+      - "6379:6379" # application.yml의 6379 포트와 일치
+    volumes:
+      - redis-data:/data
+
 volumes:
   mysql-data:
+  redis-data: # 2233076 10주차 추가 (Redis 볼륨)
