@@ -68,6 +68,12 @@ public class UserRepo {
     jdbc.update(sql, email, encodedPassword, name, role.name());
   }
 
+  // 2233076 10주차 추가: 이메일을 기준으로 비밀번호 해시 업데이트.
+  public int updatePasswordByEmail(String email, String encodedPassword) {
+    String sql =
+            "UPDATE jobproject_users SET users_password_hash = ? WHERE users_email = ?";
+    return jdbc.update(sql, encodedPassword, email);
+  }
   // 8주차 추가: users_id로 사용자 상세 정보 조회
   public Optional<UserRow> findById(Long usersId) {
     String sql =
