@@ -98,7 +98,7 @@ if (loginForm) {
         }
 
         // 로그인 성공 시 이동
-        window.location.href = '/home';
+        window.location.href = '/user/home';
       })
       .catch(function (err) {
         console.error(err);

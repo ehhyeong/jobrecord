@@ -10,4 +10,8 @@ public class HomeController {
     public String home() {
         return "home"; // templates/home.html
     }
+    @GetMapping("/user/home")
+    public String userHome() {
+        return "user-home"; // templates/user-home.html
+    }
 }

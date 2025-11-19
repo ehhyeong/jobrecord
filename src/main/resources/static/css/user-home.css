@@ -1,0 +1,474 @@
+/* --- 1. 기본 설정 --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; 
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    /* '홈페이지' Vector (흰색 배경) */
+    background: #FFFFFF; 
+}
+
+/* XD 코드의 'homepage' (left: 0.01%...)는 무시하고,
+  전체적인 레이아웃을 Flexbox로 잡습니다.
+*/
+.header-container, .main-container, .footer-container {
+    width: 100%;
+    /* 페이지의 주요 콘텐츠는 중앙에 정렬합니다. 
+      (XD 코드는 1920px 기준이었지만, 1200px 정도로 제한하는 것이 일반적)
+    */
+    max-width: 1200px;
+    margin: 0 auto; /* 좌우 자동 마진으로 중앙 정렬 */
+    padding: 20px;
+}
+
+/* --- 2. 헤더 (배경 이미지 + 상단 메뉴 + 중앙 텍스트) --- */
+.header-container {
+    /* (이전 코드...) */
+    height: 70vh; 
+    min-height: 500px;
+    background: url('/img/pattern.jpg') no-repeat center center;
+    background-size: cover;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;       /* 1. 너비를 100%로 강제 */
+    max-width: none;   /* 2. max-width 제한 해제 */
+    padding: 0;        /* 3. 좌우 패딩 제거 (top-bar가 알아서 하도록) */
+    margin: 0;         /* 4. 중앙 정렬 margin 해제 */
+}
+/* 상단 메뉴 (로고, Sign Up) */
+.header-top-bar {
+    width: 100%; /* 부모에 꽉 차게 */
+    max-width: 1200px; /* 내부 콘텐츠는 1200px 제한 */
+    
+    display: flex; /* 가로 정렬 */
+    justify-content: space-between; /* 양쪽 끝에 배치 */
+    align-items: center; /* 세로 중앙 정렬 */
+    
+    /* ★★★ 위치를 맨 위로 고정 ★★★ */
+    position: absolute;
+    top: 20px;
+    left: 50%; /* 왼쪽에서 50% 지점 */
+    transform: translateX(-50%); /* 정확히 중앙 정렬 */
+    
+    padding: 0 20px; /* 좌우 패딩 (max-width보다 작을 때) */
+    z-index: 10;
+}
+/* ... (logo-top, signup-button-top 스타일은 이전과 동일) ... */
+.logo-top {
+    font-family: 'Inter'; font-style: italic; font-weight: 400;
+    font-size: 58px; color: #FFFFFF;
+}
+
+.header-buttons {
+    display: flex;
+    align-items: center; /* 세로 중앙 정렬 */
+    gap: 30px; /* 버튼과 아이콘 사이 간격 */
+    
+    position: relative; /* ★★★ 드롭다운 메뉴의 기준점 ★★★ */
+    /* (이전에 여기 추가했던 position: relative;는 맞지만,
+       다른 요소들과의 충돌을 해결하기 위해 전체 header-top-bar의 정렬을 재조정) */
+}
+
+/* ★★★ '이력서 만들기' 버튼 스타일 ★★★ */
+.create-resume-button {
+    font-family: 'Inter';
+    font-weight: 700;
+
+    font-size: 24px; 
+    padding: 8px 20px; 
+    
+    color: #FFFFFF;
+    background: #263691;
+    border: 1px solid #a1c1eb;
+    border-radius: 20px; /* ★ 기존 8px에서 20px로 늘림 (더 둥글게) ★ */
+    
+    white-space: nowrap;
+    transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.my-info-icon {
+    width: 60px;
+    height: 60px;
+    background: #FFD700;
+    border-radius: 50%;
+    border: 2px solid #FFFFFF;
+    cursor: pointer;
+    background-image: url('my_profile_icon.png');
+    background-size: cover;
+    background-position: center;
+}
+
+/* --- 3. 메인 콘텐츠 --- */
+.main-container {
+    display: flex;
+    flex-direction: column; /* 섹션을 세로로 쌓음 */
+    gap: 80px; /* 섹션 간의 간격 */
+}
+
+/* 3-1. 히어로 섹션 (이제 헤더 컨테이너 안에 포함됨) */
+.hero-section {
+    text-align: center;
+    color: #FFFFFF;
+    /* (이전 코드의 absolute 대신 flex item으로 중앙 정렬됨) */
+    z-index: 5; /* top-bar보다는 뒤에 */
+}
+/* hero-section의 제목 */
+.hero-section h2 {
+    font-size: 45px;
+    font-weight: 400;
+    color: #FFFFFF;
+    border: 3px solid #FFFFFF;
+    display: inline-block;
+    padding: 10px 20px;
+}
+/* hero-section의 문구 */
+.hero-section p {
+    font-size: 35px;
+    font-weight: 400;
+    color: #FFFFFF;
+    margin-top: 15px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5); /* (배경과 겹칠 시 잘보이게) */
+}
+/* --- 3. 메인 콘텐츠 (흰색 박스 영역) --- */
+.main-container {
+    position: relative;
+    z-index: 5;
+}
+/* --- 3-2. 기능 소개 (Features) --- */
+.features-section {
+    margin-top: -120px; /* ★★★ -120px (또는 원하는 만큼) 위로 끌어올립니다 ★★★ */
+    
+    /* (width, max-width, margin-left/right, display, grid-template-columns, gap 등
+       나머지 모든 속성은 이전과 동일하게 유지됩니다) */
+    width: 90%; 
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+    display: grid;
+    grid-template-columns: 2.5fr 1fr; /* 방금 수정하신 비율 */
+    gap: 30px; 
+    align-items: flex-start;
+    background: none;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}
+/* ★★★ 2. '흰색 박스' (1, 2열을 감쌈) ★★★ */
+.features-content-box {
+    /* 1. 흰색 박스 스타일 */
+    background: #FFFFFF;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.1); /* 겹치는 그림자 */
+    padding: 40px;
+
+    /* ★★★ 2. 내부 2단 그리드 (1열 | 2열) ★★★ */
+    display: grid;
+    grid-template-columns: 1.5fr 2.5fr; /* 1:2.5 비율 */
+    gap: 30px; /* 1열과 2열 사이 간격 */
+    align-items: flex-start;
+}
+/* ★★★ 핵심 문구 리스트 컨테이너 ★★★ */
+/* 1열: 핵심 문구 (이전과 동일) */
+.key-phrases-list {
+    display: flex;
+    flex-direction: column;
+    gap: 30px; 
+    border-right: 1px solid #ddd;
+    padding-right: 20px; 
+}
+.key-phrases-list h3 {
+    font-size: 22px;
+    font-weight: 400;
+    color: #191919;
+    line-height: 1.4;
+}
+
+/* 2열: 상세 설명 (이전과 동일) */
+.features-list { 
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    padding-left: 20px;
+}
+.features-list h3 { 
+    font-size: 25px; 
+    font-weight: 400;
+    color: #191919;
+    line-height: 1.2;
+}
+.features-list p { 
+    font-size: 20px; 
+    font-weight: 400;
+    color: #191919;
+    line-height: 1.4;
+    margin-top: 5px; 
+}
+/* 3열: 잡코리아 박스 */
+/* ★★★ 3. '보라색 박스' (3열) ★★★ */
+.jobkorea-box {
+    background: #5B6494;
+    border-radius: 8px; 
+    color: #FFFFFF;
+    text-align: center; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center; 
+    
+    /* ★★★ 높이를 '흰색 박스'와 비슷하게 맞춤 ★★★ */
+    min-height: 350px; /* (흰색 박스 높이에 맞춰 조절) */
+    padding: 20px;
+    
+    /* (그림자 추가) */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+}
+.jobkorea-box h4 {
+    font-size: 40px; 
+    font-weight: 400;
+    line-height: 1.2;
+    margin-bottom: 20px; 
+}
+.jobkorea-box a {
+    font-size: 34px; 
+    font-weight: 400;
+    color: #FFFFFF;
+    text-decoration: underline;
+    display: flex; 
+    align-items: center;
+    gap: 10px; 
+}
+.jobkorea-box a::after {
+    content: '▶'; 
+    font-size: 24px;
+    color: #FFFFFF;
+}
+
+/* --- 3-3. 카드 섹션 - Flexbox (column) 사용 --- */
+.cards-section {
+    display: flex;
+    flex-direction: column; /* 카드 세로로 쌓기 */
+    gap: 30px; /* 카드 사이 간격 */
+    
+    /* ★★★ 1. 보라색 네모 배경(background-color) 제거 ★★★ */
+    /* background-color: #f4f0f9;  <-- 이 줄을 삭제하거나 주석 처리! */
+    
+    /* ★★★ 2. 보라색 물결 PNG 설정 ★★★ */
+    background: url('/img/23.png') no-repeat center center; /* (PNG 파일 이름) */
+    background-size: 100% auto; /* 가로 100%로 꽉 채우고 세로 비율 유지 */
+    
+    /* ★★★ 3. 물결이 잘 보이도록 섹션의 상하 여백(padding) 늘리기 ★★★ */
+    padding: 80px 40px; /* (위아래 80px, 좌우 40px) */
+    
+    /* ★★★ 4. 카드가 가로로 중앙에 오도록 정렬 ★★★ */
+    align-items: center; 
+}
+.card {
+    display: flex;
+    align-items: center;
+    background: #FFFFFF;
+    border-radius: 8px;
+    padding: 30px;
+    filter: drop-shadow(0px 10px 20px rgba(0, 0, 0, 0.1));
+    
+    /* ★★★ 1. 카드가 너무 길지 않도록 최대 너비 설정 ★★★ */
+    width: 100%;
+    max-width: 850px; /* (이 값을 조절하여 원하는 너비로 맞추세요) */
+}
+.card img {
+    width: 100px;
+    height: 100px;
+    margin-right: 30px;
+}
+.card-text h4 {
+    font-size: 40px;
+    font-weight: 400;
+    color: #000000;
+    margin-bottom: 15px;
+}
+.card-text p {
+    font-size: 20px; /* 24px는 너무 큽니다 */
+    line-height: 1.6;
+    color: #707070;
+}
+
+/* 3-4. 템플릿 섹션 - Grid 사용 */
+.templates-section {
+    text-align: center;
+    background: #F5F5F5;
+    padding: 60px 20px;
+}
+.templates-section h2 {
+    font-size: 65px;
+    font-weight: 400;
+    color: #5B5B5B;
+    margin-bottom: 40px;
+}
+.templates-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3열 그리드 유지 */
+    gap: 30px; /* ★★★ 이미지 사이의 간격을 늘려서 여백을 확보 ★★★ */
+    
+    /* ★★★ 그리드 전체의 최대 너비를 제한하여 이미지 크기를 간접적으로 줄입니다 ★★★ */
+    max-width: 1000px; /* 1200px 대신 1000px로 줄여봅니다. */
+    margin: 0 auto; /* 중앙 정렬 */
+}
+.templates-grid img {
+    width: 100%; /* 각 그리드 칸의 100%를 차지 */
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    
+    /* ★★★ 이미지가 너무 크면 최대 너비를 제한하여 줄입니다 ★★★ */
+    max-width: 300px; /* 각 이미지의 최대 너비를 300px로 제한 */
+    /* 만약 이미지가 300px보다 작다면 원본 크기를 유지하고, 크다면 300px로 줄어듭니다. */
+    
+    justify-self: center; /* 그리드 셀 안에서 이미지를 중앙 정렬 (보너스) */
+    align-self: center; /* 그리드 셀 안에서 이미지를 중앙 정렬 (보너스) */
+}
+
+/* --- 4. 푸터 (하단 정보) --- */
+.footer-container {
+    background: #E6E6E6; /* 패스 1 (회색 배경) */
+    max-width: 100%; /* 푸터 배경은 100%로 */
+    padding: 60px 10%; /* 좌우 여백 */
+}
+.footer-content {
+    display: grid;
+    /* 4열 그리드, 첫 번째 열은 2배 넓게 */
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 30px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid #707070; /* 선 5, 8 합침 */
+}
+.footer-column {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.logo-bottom {
+    font-family: 'Inter';
+    font-style: italic;
+    font-weight: 400;
+    font-size: 60px; /* 86px은 너무 큽니다 */
+    color: #333;
+    margin-bottom: 10px;
+}
+.footer-column h4 {
+    font-size: 24px; /* 30px에서 수정 */
+    font-weight: 400;
+    color: #707070;
+    border-bottom: 1px solid #707070;
+    padding-bottom: 5px;
+}
+.footer-column p {
+    font-size: 16px; /* 20px, 35px에서 수정 */
+    color: #707070;
+    line-height: 1.6;
+}
+.footer-column a {
+    font-size: 16px; /* 18px에서 수정 */
+    color: #707070;
+    text-decoration: none;
+}
+.footer-column a:hover {
+    text-decoration: underline;
+}
+
+.footer-copyright {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding-top: 30px;
+    font-size: 18px; /* 25px에서 수정 */
+    color: #707070;
+}
+.profile-dropdown {
+    display: none; /* 평소에는 숨김 */
+    position: absolute; /* ★★★ my-info-icon을 기준으로 배치 ★★★ */
+    
+    /* ★★★ 위치 조정 (my-info-icon의 오른쪽 끝에 맞춤) ★★★ */
+    top: calc(100% + 15px); /* 아이콘 높이만큼 내리고 여백 15px */
+    right: 0;  /* 아이콘의 오른쪽에 딱 맞춤 */
+    
+    width: 300px;
+    background: #FFFFFF;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    padding: 20px;
+    z-index: 100;
+    text-align: left;
+}
+/* (자바스크립트가 이 클래스를 붙이면 보임) */
+.profile-dropdown.active {
+    display: block;
+}
+
+/* 2. 상단 사용자 정보 */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+.user-avatar-small {
+    width: 40px; height: 40px;
+    background: #FFD700;
+    border-radius: 50%;
+    /* (작은 아이콘에도 이미지 적용 가능) */
+    /* background-image: url('my_profile_icon.png'); */ 
+    background-size: cover;
+}
+.user-name {
+    font-size: 16px; font-weight: bold; color: #333;
+    margin: 0;
+}
+.user-email {
+    font-size: 13px; color: #777;
+    margin: 0;
+}
+
+/* 3. 구분선 */
+.divider {
+    border: 0;
+    border-top: 1px solid #eee;
+    margin: 10px 0;
+}
+
+/* 4. 메뉴 리스트 */
+.dropdown-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.dropdown-menu li {
+    margin-bottom: 5px;
+}
+.dropdown-menu a {
+    display: block;
+    padding: 10px 10px;
+    text-decoration: none;
+    color: #333;
+    font-size: 15px;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+/* 마우스 올렸을 때 회색 배경 */
+.dropdown-menu a:hover {
+    background-color: #f5f5f5;
+}
+/* 로그아웃 버튼은 빨간색 (선택사항) */
+.dropdown-menu .logout {
+    color: #d93025;
+}
+
+/* (위치 기준점을 잡기 위해 부모에게 relative 추가) */
+.header-buttons {
+    position: relative; 
+}
