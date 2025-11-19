@@ -8,8 +8,9 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: #"여기에-본인-구글-이메일-입력@gmail.com"
-    password: #"여기에-구글-앱-비밀번호-입력" 구글 계정 비밀번호가 아닌 앱 비밀번호를 따로 발급받아 적어야함
+    username: jobrecord.noreply@gmail.com
+    password: fver ypvg ceen teem
+    default-encoding: UTF-8
     properties:
       mail:
         smtp:

@@ -24,6 +24,8 @@
       <div class="input-group">
         <label for="email">*E-Mail</label>
         <input type="email" id="email" name="email" />
+        <!-- 융합프로젝트 김태형 11주차 이메일 중복체크 : 이메일 에러 메시지 표시 영역 (추가) -->
+        <span id="email-error" class="error-text" aria-live="polite"></span> <!-- (추가) -->
       </div>
 
       <div class="input-group">
@@ -50,6 +52,9 @@
 
       <!-- 초기 비활성화 -->
       <button type="submit" class="signup-button" disabled>가입하기</button>
+
+      <!-- 서버 응답 에러 메시지 표시용 -->
+      <p id="signup-error" class="error-text" aria-live="polite"></p>
     </form>
   </div>
 
