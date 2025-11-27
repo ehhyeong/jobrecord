@@ -11,6 +11,43 @@ const loginButton = document.querySelector('.login-button');
 const loginForm = document.querySelector('.login-form');
 const loginError = document.getElementById('login-error');
 
+// 비밀번호 표시/숨김 토글
+const passwordToggle = document.querySelector('.password-toggle');
+const capsLockWarning = document.querySelector('.caps-lock-warning');
+
+if (passwordToggle && passwordInput) {
+  passwordToggle.addEventListener('click', function() {
+    const type = passwordInput.type === 'password' ? 'text' : 'password';
+    passwordInput.type = type;
+    
+    // 아이콘 변경
+    const icon = passwordToggle.querySelector('i');
+    if (type === 'password') {
+      icon.className = 'fa-regular fa-eye';
+    } else {
+      icon.className = 'fa-regular fa-eye-slash';
+    }
+  });
+}
+
+// Caps Lock 감지
+if (passwordInput && capsLockWarning) {
+  passwordInput.addEventListener('keydown', function(e) {
+    const capsLockOn = e.getModifierState && e.getModifierState('CapsLock');
+    capsLockWarning.style.display = capsLockOn ? 'flex' : 'none';
+  });
+  
+  passwordInput.addEventListener('keyup', function(e) {
+    const capsLockOn = e.getModifierState && e.getModifierState('CapsLock');
+    capsLockWarning.style.display = capsLockOn ? 'flex' : 'none';
+  });
+  
+  // 포커스 벗어날 때 경고 숨김
+  passwordInput.addEventListener('blur', function() {
+    capsLockWarning.style.display = 'none';
+  });
+}
+
 // 2. 로그인 폼 유효성 검사
 function validateLoginForm() {
   const emailValue = emailInput ? emailInput.value : '';

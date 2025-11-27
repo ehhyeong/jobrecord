@@ -31,10 +31,16 @@
 
       <div class="input-group">
         <label for="password">*Password</label>
-        <div class="input-wrapper">
+        <div class="input-wrapper password-wrapper">
           <i class="fa-solid fa-lock"></i>
           <input type="password" id="password" name="password">
+          <button type="button" class="password-toggle" aria-label="비밀번호 표시">
+            <i class="fa-regular fa-eye"></i>
+          </button>
         </div>
+        <p class="caps-lock-warning" style="display: none;">
+          <i class="fa-solid fa-triangle-exclamation"></i> Caps Lock이 켜져 있습니다
+        </p>
       </div>
 
       <button type="submit" class="login-button" disabled>Log-in</button>

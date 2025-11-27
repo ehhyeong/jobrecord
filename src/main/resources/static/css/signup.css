@@ -96,6 +96,47 @@ body {
     outline: none;
     border-bottom: 2px solid #4366F1;
 }
+
+/* 비밀번호 필드 래퍼 */
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.password-wrapper input {
+    padding-right: 45px;
+}
+.password-toggle,
+.password-toggle-confirm {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #B9B9B9;
+    font-size: 18px;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
+.password-toggle:hover,
+.password-toggle-confirm:hover {
+    color: #4366F1;
+}
+
+/* Caps Lock 경고 */
+.caps-lock-warning,
+.caps-lock-warning-confirm {
+    color: #f57c00;
+    font-size: 12px;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
 /* 비밀번호 오류 메시지 스타일 */
 .error-message {
     color: #FF0000; /* 빨간색 */

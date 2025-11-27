@@ -21,6 +21,75 @@ document.addEventListener('DOMContentLoaded', () => {
   const phoneInput = document.getElementById('phone');          // 전화번호 입력 요소
   const phoneError = document.getElementById('phone-error');    // 전화번호 에러 메시지 출력용
 
+  // 비밀번호 표시/숨김 요소
+  const passwordToggle = document.querySelector('.password-toggle');
+  const passwordToggleConfirm = document.querySelector('.password-toggle-confirm');
+  const capsLockWarning = document.querySelector('.caps-lock-warning');
+  const capsLockWarningConfirm = document.querySelector('.caps-lock-warning-confirm');
+
+  // 비밀번호 표시/숨김 토글
+  if (passwordToggle && passwordInput) {
+    passwordToggle.addEventListener('click', function() {
+      const type = passwordInput.type === 'password' ? 'text' : 'password';
+      passwordInput.type = type;
+      
+      const icon = passwordToggle.querySelector('i');
+      if (type === 'password') {
+        icon.className = 'fa-regular fa-eye';
+      } else {
+        icon.className = 'fa-regular fa-eye-slash';
+      }
+    });
+  }
+
+  if (passwordToggleConfirm && passwordConfirmInput) {
+    passwordToggleConfirm.addEventListener('click', function() {
+      const type = passwordConfirmInput.type === 'password' ? 'text' : 'password';
+      passwordConfirmInput.type = type;
+      
+      const icon = passwordToggleConfirm.querySelector('i');
+      if (type === 'password') {
+        icon.className = 'fa-regular fa-eye';
+      } else {
+        icon.className = 'fa-regular fa-eye-slash';
+      }
+    });
+  }
+
+  // Caps Lock 감지 - 비밀번호 필드
+  if (passwordInput && capsLockWarning) {
+    passwordInput.addEventListener('keydown', function(e) {
+      const capsLockOn = e.getModifierState && e.getModifierState('CapsLock');
+      capsLockWarning.style.display = capsLockOn ? 'flex' : 'none';
+    });
+    
+    passwordInput.addEventListener('keyup', function(e) {
+      const capsLockOn = e.getModifierState && e.getModifierState('CapsLock');
+      capsLockWarning.style.display = capsLockOn ? 'flex' : 'none';
+    });
+    
+    passwordInput.addEventListener('blur', function() {
+      capsLockWarning.style.display = 'none';
+    });
+  }
+
+  // Caps Lock 감지 - 비밀번호 확인 필드
+  if (passwordConfirmInput && capsLockWarningConfirm) {
+    passwordConfirmInput.addEventListener('keydown', function(e) {
+      const capsLockOn = e.getModifierState && e.getModifierState('CapsLock');
+      capsLockWarningConfirm.style.display = capsLockOn ? 'flex' : 'none';
+    });
+    
+    passwordConfirmInput.addEventListener('keyup', function(e) {
+      const capsLockOn = e.getModifierState && e.getModifierState('CapsLock');
+      capsLockWarningConfirm.style.display = capsLockOn ? 'flex' : 'none';
+    });
+    
+    passwordConfirmInput.addEventListener('blur', function() {
+      capsLockWarningConfirm.style.display = 'none';
+    });
+  }
+
   // 필수 요소 체크
   const requiredEls = {
     termsCheckbox,
