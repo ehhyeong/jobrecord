@@ -1,0 +1,207 @@
+package com.jobproj.api.jobs;
+
+import com.jobproj.api.common.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/jobs")
+@RequiredArgsConstructor
+@Validated
+@Tag(name = "Jobs", description = "잡코리아 연동(더미) - 추천/검색 API")
+@SecurityRequirement(name = "bearerAuth") // 공개 엔드포인트로 열려면 이 줄 제거
+public class JobsController {
+
+    private final JobsService jobsService;
+    private final GeminiMatchingService geminiMatchingService;
+
+    @GetMapping("/recommend")
+    @Operation(
+        summary = "추천 공고(더미)",
+        description = "리스트/상세 하단에 '잡코리아 제공' 링크 고지 필요(sourceUrl 사용).",
+        responses = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                responseCode = "200", description = "성공",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponse.class),
+                    examples = @ExampleObject(
+                        name = "success",
+                        value = """
+                        {
+                          "success": true,
+                          "code": "OK",
+                          "message": null,
+                          "data": [
+                            {
+                              "id": "JK-2025-0001",
+                              "title": "Spring 백엔드 개발자 (신입~경력)",
+                              "company": "잡코리아",
+                              "location": "서울 강남구",
+                              "salaryMin": 4500,
+                              "salaryMax": 8000,
+                              "experience": "MID",
+                              "tags": ["Spring", "JPA", "AWS"],
+                              "matchScore": 87.5,
+                              "postedAt": "2025-11-07T12:34:56",
+                              "applyUrl": "https://www.jobkorea.co.kr/Recruit/GI_Read/18523338",
+                              "source": "JOBKOREA",
+                              "sourceUrl": "https://www.jobkorea.co.kr/Recruit/GI_Read/18523338"
+                            }
+                          ]
+                        }
+                        """
+                    )
+                )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 필요"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "권한 없음")
+        }
+    )
+    public ApiResponse<List<JobDto>> recommend(
+        @Parameter(description = "반환 개수(1~50)", example = "10")
+        @RequestParam(defaultValue = "10") @Min(1) @Max(50) int limit
+    ) {
+        return ApiResponse.ok(jobsService.recommend(limit));
+    }
+
+    @GetMapping("/search")
+    @Operation(
+        summary = "공고 검색(더미)",
+        description = "JobKorea 스타일 파라미터 수용(q/page/size/ob/rbcd/rpcd/area/edu1/edu2/edu3/pay/payterm/ctype/mcareerchk/car1/car2/car_chk/jtype).",
+        responses = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                responseCode = "200", description = "성공",
+                content = @Content(
+                    schema = @Schema(implementation = ApiResponse.class),
+                    examples = @ExampleObject(
+                        name = "success",
+                        value = """
+                        {
+                          "success": true,
+                          "code": "OK",
+                          "message": null,
+                          "data": {
+                            "items": [
+                              {
+                                "id": "JK-2025-0021",
+                                "title": "스프링 백엔드 개발자(주니어)",
+                                "company": "잡코리아",
+                                "location": "서울",
+                                "salaryMin": 4000,
+                                "salaryMax": 5500,
+                                "experience": "JUNIOR",
+                                "tags": ["Java", "Spring", "JPA"],
+                                "postedAt": "2025-11-08T10:11:12",
+                                "applyUrl": "https://www.jobkorea.co.kr/",
+                                "source": "JOBKOREA",
+                                "sourceUrl": "https://www.jobkorea.co.kr/"
+                              }
+                            ],
+                            "page": 0,
+                            "size": 10,
+                            "total": 27
+                          }
+                        }
+                        """
+                    )
+                )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "요청값 오류"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 필요")
+        }
+    )
+    public ApiResponse<JobSearchResponse> search(
+        @Parameter(description = "검색어", example = "spring backend")
+        @RequestParam(required = false) String q,
+        @Parameter(description = "페이지(0-base)", example = "0")
+        @RequestParam(defaultValue = "0") @Min(0) int page,
+        @Parameter(description = "페이지 크기(1~50)", example = "10")
+        @RequestParam(defaultValue = "10") @Min(1) @Max(50) int size,
+        @RequestParam(required = false, name = "ob") Integer orderBy,
+        @RequestParam(required = false, name = "rbcd") String rbcd,
+        @RequestParam(required = false, name = "rpcd") String rpcd,
+        @RequestParam(required = false, name = "area") String area,
+        @RequestParam(required = false, name = "edu1") Integer edu1,
+        @RequestParam(required = false, name = "edu2") Integer edu2,
+        @RequestParam(required = false, name = "edu3") Integer edu3,
+        @RequestParam(required = false, name = "pay") Integer pay,
+        @RequestParam(required = false, name = "payterm") String payterm,
+        @RequestParam(required = false, name = "ctype") Integer ctype,
+        @RequestParam(required = false, name = "mcareerchk") Integer mcareerchk,
+        @RequestParam(required = false, name = "car1") Integer car1,
+        @RequestParam(required = false, name = "car2") Integer car2,
+        @RequestParam(required = false, name = "car_chk") Integer carChk,
+        @RequestParam(required = false, name = "jtype") String jtype
+    ) {
+        // 더미 구현: 필터는 보관만 하고, 검색은 핵심 파라미터(q, page, size)만 반영
+        return ApiResponse.ok(jobsService.search(q, page, size));
+    }
+
+    @PostMapping("/match")
+    @Operation(
+        summary = "AI 기반 이력서-공고 매칭",
+        description = "Gemini API를 사용하여 이력서 전체 정보와 채용공고의 매칭도를 계산합니다."
+    )
+    public ApiResponse<GeminiMatchingService.MatchResult> matchWithAI(
+        @RequestBody MatchRequest request
+    ) {
+        var result = geminiMatchingService.calculateMatchScore(
+            request.getResumeInfo(),
+            request.getJob()
+        );
+        return ApiResponse.ok(result);
+    }
+
+    @PostMapping("/match/batch")
+    @Operation(
+        summary = "AI 기반 배치 매칭 (여러 공고)",
+        description = "Gemini API를 사용하여 여러 채용공고를 한 번에 매칭합니다. API 호출 최소화."
+    )
+    public ApiResponse<List<GeminiMatchingService.MatchResult>> matchBatchWithAI(
+        @RequestBody BatchMatchRequest request
+    ) {
+        var results = geminiMatchingService.calculateMatchScoreBatch(
+            request.getResumeInfo(),
+            request.getJobs()
+        );
+        return ApiResponse.ok(results);
+    }
+
+    /**
+     * 2233076 13주차 개선: AI 매칭 요청 DTO (종합 이력서 정보 포함)
+     */
+    public static class MatchRequest {
+        private GeminiMatchingService.ResumeInfo resumeInfo;
+        private JobDto job;
+
+        public GeminiMatchingService.ResumeInfo getResumeInfo() { return resumeInfo; }
+        public void setResumeInfo(GeminiMatchingService.ResumeInfo resumeInfo) { this.resumeInfo = resumeInfo; }
+        public JobDto getJob() { return job; }
+        public void setJob(JobDto job) { this.job = job; }
+    }
+
+    /**
+     * 2233076 13주차 개선: AI 배치 매칭 요청 DTO (종합 이력서 정보 포함)
+     */
+    public static class BatchMatchRequest {
+        private GeminiMatchingService.ResumeInfo resumeInfo;
+        private List<JobDto> jobs;
+
+        public GeminiMatchingService.ResumeInfo getResumeInfo() { return resumeInfo; }
+        public void setResumeInfo(GeminiMatchingService.ResumeInfo resumeInfo) { this.resumeInfo = resumeInfo; }
+        public List<JobDto> getJobs() { return jobs; }
+        public void setJobs(List<JobDto> jobs) { this.jobs = jobs; }
+    }
+}

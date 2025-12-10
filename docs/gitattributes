@@ -1,0 +1,5 @@
+* text=auto eol=lf
+
+# Keep Windows scripts with CRLF if needed
+*.bat text eol=crlf
+*.cmd text eol=crlf

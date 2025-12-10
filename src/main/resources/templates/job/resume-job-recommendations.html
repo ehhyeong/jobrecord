@@ -1,0 +1,167 @@
+<!-- 2233076 13주차 추가: 이력서 기반 추천 공고 HTML -->
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>이력서 기반 추천 공고 - JobRecord</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/resume-job-recommendations.css}">
+</head>
+<body>
+<div class="page">
+    <!-- 상단 바 -->
+    <div class="top-bar">
+        <a href="/user/home" class="logo">
+            <img src="/img/logo.png" alt="JobRecord" class="logo-img">
+        </a>
+        
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <div class="top-user">
+                <span id="user-name">로딩 중...</span>
+            </div>
+            
+            <!-- 다크모드 토글 -->
+            <div class="theme-toggle-wrapper">
+                <button class="theme-toggle" id="theme-toggle" title="다크모드 전환">
+                    <div class="theme-toggle-slider">🌙</div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 페이지 헤더 -->
+    <header class="page-header">
+        <h1>이력서 기반 추천 공고</h1>
+        <p>등록해 둔 이력서를 바탕으로, 기술 스택과 경력을 분석해 맞춤형 채용 공고를 보여줍니다.</p>
+    </header>
+
+    <main class="layout">
+        <!-- 왼쪽: 이력서 선택 + 필터 -->
+        <aside class="left-panel">
+            <h2 class="panel-title">추천 기준 설정</h2>
+
+            <div class="field-group">
+                <label for="resume-select">기준 이력서 선택</label>
+                <select id="resume-select" name="resume">
+                    <option value="">이력서를 선택하세요</option>
+                    <!-- JavaScript로 동적 생성 -->
+                </select>
+            </div>
+
+            <div class="field-group">
+                <div class="sub-label">이력서에서 추출한 핵심 스킬</div>
+                <div class="chip-list" id="resume-skill-chips">
+                    <!-- JavaScript로 동적 생성 -->
+                </div>
+            </div>
+
+            <hr style="border:none;border-top:1px solid #e5e7eb;margin:10px 0 14px;">
+
+            <h3 class="sub-label" style="margin-bottom:8px;">필터</h3>
+
+            <div class="field-group">
+                <label for="region-select">근무 지역</label>
+                <select id="region-select">
+                    <option value="">전체</option>
+                    <option value="서울">서울</option>
+                    <option value="경기">경기</option>
+                    <option value="인천">인천</option>
+                    <option value="원격">원격/재택</option>
+                </select>
+            </div>
+
+            <div class="field-row">
+                <div class="field-group">
+                    <label for="job-type">직무</label>
+                    <select id="job-type">
+                        <option value="">전체</option>
+                        <option value="백엔드">백엔드 개발자</option>
+                        <option value="풀스택">풀스택 개발자</option>
+                        <option value="프론트엔드">프론트엔드 개발자</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label for="career-select">경력</label>
+                    <select id="career-select">
+                        <option value="">전체</option>
+                        <option value="신입">인턴/신입</option>
+                        <option value="1-3">1~3년</option>
+                        <option value="3-5">3~5년</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label for="company-keyword">회사/키워드</label>
+                <input id="company-keyword" type="search" placeholder="회사명 또는 키워드 검색">
+            </div>
+
+            <div class="checkbox-row">
+                <input id="match-over-70" type="checkbox">
+                <label for="match-over-70">매칭도 70% 이상만 보기</label>
+            </div>
+            <div class="checkbox-row">
+                <input id="only-open" type="checkbox" checked>
+                <label for="only-open">마감되지 않은 공고만 보기</label>
+            </div>
+
+            <!-- 2233076 13주차 추가: 검색 버튼 -->
+            <button class="search-button" id="search-button" disabled>
+                <span class="search-icon"></span>
+                채용공고 검색
+            </button>
+        </aside>
+
+        <!-- 오른쪽: 추천 공고 리스트 -->
+        <section class="right-panel">
+            <!-- 요약 바 -->
+            <div class="summary-bar">
+                <div class="summary-main">
+                    <span class="name" id="summary-user-name">로딩 중...</span> 님의 이력서를 기준으로
+                    <span class="summary-count" id="summary-count">0개의 채용 공고</span>를 추천했어요.
+                </div>
+                <div class="summary-pill" id="summary-match">
+                    이력서와 평균 매칭도 약 0%
+                </div>
+            </div>
+
+            <!-- 정렬/검색 -->
+            <div class="controls-row">
+                <div class="left">
+                    <span class="small-tag">정렬</span>
+                    <select class="sort-select" id="sort-select">
+                        <option value="match">매칭도 높은 순</option>
+                        <option value="recent">최근 등록 순</option>
+                        <option value="deadline">마감 임박 순</option>
+                    </select>
+                </div>
+                <div class="right">
+                    <span class="small-tag" id="total-count">총 0건</span>
+                </div>
+            </div>
+
+            <!-- 공고 리스트 -->
+            <div class="job-list" id="job-list">
+                <!-- JavaScript로 동적 생성 -->
+            </div>
+
+            <!-- 2233076 13주차 추가: AI 로딩 표시 -->
+            <div class="ai-loading-overlay" id="ai-loading" style="display: none;">
+                <div class="ai-loading-content">
+                    <div class="ai-loading-spinner"></div>
+                    <div class="ai-loading-text">
+                        <div class="ai-loading-title">AI가 매칭도를 분석하고 있습니다...</div>
+                        <div class="ai-loading-subtitle">이력서와 채용공고를 비교하여 최적의 추천을 준비 중입니다.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script th:src="@{/js/env.js}"></script>
+<script th:src="@{/js/auth.js}"></script>
+<script th:src="@{/js/theme-toggle.js}"></script>
+<script th:src="@{/js/resume-job-recommendations.js}"></script>
+</body>
+</html>

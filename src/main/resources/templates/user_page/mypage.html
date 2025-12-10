@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>마이페이지 - Job Record</title>
+
+    <!-- 폰트 / 아이콘 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/mypage.css" />
+</head>
+
+<body>
+<header class="header">
+    <a href="/user/home" class="logo">
+        <img src="/img/logo.png" alt="Job Record" class="logo-img">
+    </a>
+    
+    <div style="display: flex; align-items: center; gap: 16px;">
+        <div class="theme-toggle-wrapper">
+            <button class="theme-toggle" id="theme-toggle" title="다크모드 전환">
+                <div class="theme-toggle-slider">🌙</div>
+            </button>
+        </div>
+        <a onclick="logout()" class="logout-btn">로그아웃</a>
+    </div>
+</header>
+
+<div class="container">
+    <div class="profile-card">
+        <div class="profile-avatar">
+            <i class="fa-regular fa-user"></i>
+        </div>
+
+        <h1 class="profile-name" id="user-name">로딩 중...</h1>
+        <p class="profile-email" id="user-email">-</p>
+
+        <div class="info-list">
+            <div class="info-item">
+                <span class="info-label">전화번호</span>
+                <span class="info-value" id="user-phone">-</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">가입일</span>
+                <span class="info-value" id="user-created">-</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">최근 수정일</span>
+                <span class="info-value" id="user-updated">-</span>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button onclick="openPasswordModal()" class="btn btn-primary">비밀번호 변경</button>
+            <button onclick="openWithdrawModal()" class="btn btn-danger-outline">회원 탈퇴</button>
+        </div>
+    </div>
+</div>
+
+<!-- 회원 탈퇴 모달 -->
+<div id="withdraw-modal" class="modal-overlay">
+    <div class="modal-content">
+        <button class="modal-close-btn" onclick="closeWithdrawModal()">&times;</button>
+
+        <h3 class="modal-title">정말 탈퇴하시겠습니까?</h3>
+        <p class="modal-desc">
+            탈퇴 시 모든 이력서와 개인정보가 영구적으로 삭제되며 복구할 수 없습니다.<br>
+            본인 확인을 위해 비밀번호를 입력해주세요.
+        </p>
+
+        <input type="password" id="withdraw-password" class="modal-input" placeholder="현재 비밀번호 입력">
+
+        <div class="modal-vertical-buttons">
+            <button onclick="requestWithdraw()" class="btn modal-btn-confirm modal-button-full">탈퇴하기</button>
+            <button onclick="closeWithdrawModal()" class="btn modal-btn-cancel modal-button-full">취소</button>
+        </div>
+    </div>
+</div>
+
+<!-- 비밀번호 재설정 모달 -->
+<div id="password-reset-modal" class="modal-overlay">
+    <div class="modal-content">
+
+        <button class="modal-close-btn" onclick="closePasswordModal()">&times;</button>
+
+        <h2>비밀번호 재설정</h2>
+
+        <!-- 1단계 -->
+        <form id="form-request">
+            <h3>1. 인증번호 발송</h3>
+
+            <label for="req-email">이메일</label>
+            <!-- 2233076 13주차 추가: 마이페이지에서 이메일 수정 불가능하게 설정 -->
+            <input type="email" id="req-email" class="modal-input" placeholder="가입 이메일 입력" readonly>
+
+            <p id="reset-email-error"></p>
+
+            <button type="button" id="request-code-button" class="btn btn-primary modal-button-full">
+                인증번호 받기
+            </button>
+        </form>
+
+        <!-- 2단계 -->
+        <form id="form-confirm">
+            <h3>2. 인증 및 비밀번호 변경</h3>
+
+            <label for="conf-code">인증번호</label>
+            <input type="text" id="conf-code" class="modal-input" maxlength="6" placeholder="6자리 인증번호 입력">
+
+            <div class="modal-vertical-buttons">
+                <button type="button" id="verify-code-button" class="btn btn-secondary modal-button-full" disabled>
+                    인증번호 확인
+                </button>
+
+                <button type="button" id="resend-code-button" class="btn btn-secondary modal-button-full" disabled>
+                    인증번호 재발급
+                </button>
+            </div>
+
+            <p id="code-message"></p>
+
+            <label for="conf-password">새 비밀번호</label>
+            <input type="password" id="conf-password" class="modal-input" minlength="8" placeholder="8자 이상, 특수문자 포함">
+
+            <p id="conf-password-error"></p>
+
+            <button type="submit" id="confirm-reset-password-button" class="btn btn-primary modal-button-full" disabled>
+                비밀번호 변경하기
+            </button>
+        </form>
+
+        <div id="message"></div>
+    </div>
+</div>
+
+<script src="/js/env.js"></script>
+<script src="/js/theme-toggle.js"></script>
+<script src="/js/password-reset.js"></script>
+<script src="/js/mypage.js"></script>
+</body>
+</html>

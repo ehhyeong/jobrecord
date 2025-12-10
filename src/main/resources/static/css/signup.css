@@ -1,0 +1,286 @@
+/* --- 기본 설정 (초기화) + 다크모드 --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 라이트 모드 (기본) */
+:root {
+    --bg-color: #FFFFFF;
+    --text-primary: #000000;
+    --text-secondary: #5D5D5D;
+    --text-placeholder: #B9B9B9;
+    --border-color: #707070;
+    --input-bg: #FFFFFF;
+    --button-disabled-bg: #FFFFFF;
+    --button-disabled-border: #C5C5C5;
+    --button-disabled-text: #9B9B9B;
+    --accent-color: #4366F1;
+}
+
+/* 다크 모드 */
+[data-theme="dark"] {
+    --bg-color: #1f2937;
+    --text-primary: #f9fafb;
+    --text-secondary: #d1d5db;
+    --text-placeholder: #9ca3af;
+    --border-color: #374151;
+    --input-bg: #111827;
+    --button-disabled-bg: #374151;
+    --button-disabled-border: #4b5563;
+    --button-disabled-text: #9ca3af;
+    --accent-color: #fb923c;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-image: url("/img/office.jpg"); 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: rgba(0, 0, 0, 0.14);
+    background-blend-mode: multiply;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    transition: background-color 0.3s ease;
+}
+
+[data-theme="dark"] body {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* --- 흰색 박스 (signup-container) --- */
+.signup-container {
+    width: 100%;
+    max-width: 600px;
+    padding: 50px 60px;
+    
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: background-color 0.3s ease;
+    position: relative;
+}
+
+/* 다크모드 토글 스위치 */
+.theme-toggle {
+    position: relative;
+    width: 52px;
+    height: 28px;
+    background: var(--border-color);
+    border-radius: 14px;
+    border: 2px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.theme-toggle-slider {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: #FFFFFF;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .theme-toggle {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+[data-theme="dark"] .theme-toggle-slider {
+    left: 26px;
+}
+
+/* 1. 제목/부제목 영역 */
+.header-section {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.header-section .logo-link {
+    display: inline-block;
+    text-decoration: none;
+}
+
+.header-section .logo-img {
+    height: 60px;
+    width: auto;
+    object-fit: contain;
+    margin-bottom: 10px;
+    transition: filter 0.3s ease;
+}
+
+[data-theme="dark"] .header-section .logo-img {
+    filter: brightness(0) invert(1);
+}
+
+.header-section h1 {
+    font-size: 60px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.header-section h2 {
+    font-size: 40px;
+    font-weight: 400;
+    color: var(--text-primary);
+    margin-top: 10px;
+}
+
+.header-section p {
+    font-size: 15px;
+    color: var(--accent-color);
+    margin-top: 20px;
+}
+
+/* 2. 폼 영역 */
+.signup-form {
+    width: 100%;
+}
+
+.input-group {
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+.input-group label {
+    font-size: 15px;
+    color: var(--text-placeholder);
+    display: block;
+    margin-bottom: 12px;
+}
+
+.input-group input {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    padding: 8px 0;
+    font-size: 16px;
+    background: transparent;
+    color: var(--text-primary);
+}
+
+.input-group input:focus {
+    outline: none;
+    border-bottom: 2px solid var(--accent-color);
+}
+
+/* 비밀번호 필드 래퍼 */
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-wrapper input {
+    padding-right: 45px;
+}
+
+.password-toggle,
+.password-toggle-confirm {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-placeholder);
+    font-size: 18px;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
+
+.password-toggle:hover,
+.password-toggle-confirm:hover {
+    color: var(--accent-color);
+}
+
+/* Caps Lock 경고 */
+.caps-lock-warning,
+.caps-lock-warning-confirm {
+    color: #f57c00;
+    font-size: 12px;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* 3. 이용약관 */
+.terms-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.terms-group input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--border-color);
+    margin-right: 10px;
+}
+
+.terms-group label {
+    font-size: 15px;
+    color: var(--text-secondary);
+}
+
+/* 4. 가입하기 버튼 */
+.signup-button {
+    width: 100%;
+    padding: 15px 0;
+    font-size: 30px;
+    font-weight: 400;
+    
+    background: var(--button-disabled-bg);
+    border: 2px solid var(--button-disabled-border);
+    color: var(--button-disabled-text);
+    
+    cursor: not-allowed;
+    transition: all 0.3s ease;
+}
+
+.signup-button.active {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    color: #FFFFFF;
+    cursor: pointer;
+}
+
+.error-text {
+    color: #d32f2f;
+    font-size: 12px;
+    margin-top: 6px;
+    display: block;
+}
+
+.error-message {
+    color: #FF0000;
+    font-size: 12px;
+    margin-top: 8px;
+    height: 12px;
+}

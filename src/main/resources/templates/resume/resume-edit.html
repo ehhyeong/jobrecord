@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>이력서 편집 페이지 - 사진 포함</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="/css/resume-edit.css">
+
+    <!-- ✅ PDF 생성용 라이브러리: 로컬 js 사용 (CDN 차단 대비) -->
+    <script src="/js/lib/html2canvas.min.js"></script>
+    <script src="/js/lib/jspdf.umd.min.js"></script>
+</head>
+<body>
+<div class="page">
+    <header>
+        <div class="top-bar">
+            <!-- 2233076 13주차 추가: 로고 추가 -->
+            <a href="/user/home" class="top-logo">
+                <img src="/img/logo.png" alt="Job Record" class="top-logo-img">
+            </a>
+
+            <!-- 다크모드 토글 -->
+            <div class="theme-toggle-wrapper">
+                <button class="theme-toggle" id="theme-toggle" title="다크모드 전환">
+                    <div class="theme-toggle-slider">🌙</div>
+                </button>
+            </div>
+
+            <!-- 내 초안(이력서 목록) 페이지로 이동 -->
+            <button type="button" class="back-button" id="back-to-list-btn">
+                <span>&lt;</span>
+                <span>이력서 목록으로</span>
+            </button>
+
+            <div class="top-divider"></div>
+
+            <div class="file-actions">
+                <div>
+                    <span class="file-name-label">파일 이름</span>
+                    <span class="file-name-value" id="file-name-display">새 이력서</span>
+                </div>
+                <button type="button" class="top-btn" id="rename-file-btn">파일 이름 변경</button>
+                <button type="button" class="top-btn primary" id="save-file-btn">저장하기</button>
+            </div>
+
+            <div class="user-info">
+                <span class="user-info-name" id="current-user-name">홍길동</span>
+                <span class="user-info-email" id="current-user-email">user@example.com</span>
+            </div>
+        </div>
+
+        <h1>이력서 편집</h1>
+        <p>왼쪽에서 정보를 입력하고, 오른쪽 템플릿 구조를 기준으로 화면을 구성합니다.</p>
+    </header>
+
+    <main class="layout">
+        <!-- ===================== 좌측 입력 영역 ===================== -->
+        <section class="editor">
+            <h2>이력서 정보 입력</h2>
+
+            <h3 class="section-title">기본 정보</h3>
+
+            <div class="basic-actions">
+                <button type="button" class="fill-btn" id="fill-from-user-btn">
+                    로그인 정보로 자동 채우기
+                </button>
+                <span class="hint-inline">
+                    현재 로그인한 계정의 정보를 불러옵니다.
+                </span>
+            </div>
+
+            <div class="field-group">
+                <div class="field">
+                    <label for="input-name">이름</label>
+                    <input id="input-name" type="text" placeholder="홍길동">
+                </div>
+                <div class="field">
+                    <label for="input-phone">전화번호</label>
+                    <input id="input-phone" type="tel" placeholder="010-1234-5678">
+                </div>
+            </div>
+            <div class="field-group">
+                <div class="field">
+                    <label for="input-email">이메일</label>
+                    <input id="input-email" type="email" placeholder="user@example.com">
+                </div>
+                <div class="field">
+                    <label for="input-birth">생년월일</label>
+                    <input id="input-birth" type="date">
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="input-summary">한 줄 소개</label>
+                <textarea id="input-summary" placeholder="예: Java/Spring 백엔드 개발자, 2년 차"></textarea>
+                <p class="hint">간단한 자기소개 한 문장 정도를 작성합니다.</p>
+            </div>
+
+            <div class="field">
+                <label for="input-photo">사진 업로드</label>
+                <input id="input-photo" type="file" accept="image/png, image/jpeg">
+                <p class="hint">png, jpg 형식의 증명사진을 업로드하세요.</p>
+            </div>
+
+            <h3 class="section-title">학력 섹션</h3>
+            <div class="field-group">
+                <div class="field">
+                    <label for="input-edu-school">학교명</label>
+                    <input id="input-edu-school" type="text" placeholder="부천대학교">
+                </div>
+                <div class="field">
+                    <label for="input-edu-major">전공</label>
+                    <input id="input-edu-major" type="text" placeholder="컴퓨터공학과">
+                </div>
+            </div>
+            <div class="field-group">
+                <div class="field">
+                    <label for="input-edu-degree">학위</label>
+                    <input id="input-edu-degree" type="text" placeholder="학사 (재학/졸업 등)">
+                </div>
+                <div class="field">
+                    <label for="input-edu-period">재학 기간</label>
+                    <input id="input-edu-period" type="text" placeholder="2023.03 ~ 재학">
+                </div>
+            </div>
+
+            <h3 class="section-title">경력 섹션</h3>
+
+            <!-- 🔹 경력 그룹들을 담는 컨테이너 -->
+            <div id="experience-container">
+                <!-- 경력 1 기본 템플릿 -->
+                <div class="experience-group" data-exp-index="1">
+                    <div class="sub-section-label">경력 1</div>
+                    <div class="field-group">
+                        <div class="field">
+                            <label for="input-exp1-company">회사명</label>
+                            <input id="input-exp1-company" type="text" placeholder="OOO 주식회사">
+                        </div>
+                        <div class="field">
+                            <label for="input-exp1-position">직무 / 직책</label>
+                            <input id="input-exp1-position" type="text" placeholder="백엔드 개발자">
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <div class="field">
+                            <label for="input-exp1-period">근무 기간</label>
+                            <input id="input-exp1-period" type="text" placeholder="2024.01 ~ 2024.06">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="input-exp1-desc">주요 업무 / 성과</label>
+                        <textarea id="input-exp1-desc" placeholder="API 개발, 성능 개선, 장애 대응 등"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" class="add-button" id="add-experience-btn">
+                + 경력 추가
+            </button>
+
+            <h3 class="section-title">프로젝트 섹션</h3>
+
+            <!-- 🔹 프로젝트 그룹들을 담는 컨테이너 -->
+            <div id="project-container">
+                <!-- 프로젝트 1 기본 템플릿 -->
+                <div class="project-group" data-proj-index="1">
+                    <div class="sub-section-label">프로젝트 1</div>
+                    <div class="field-group">
+                        <div class="field">
+                            <label for="input-proj1-name">프로젝트명</label>
+                            <input id="input-proj1-name" type="text" placeholder="JobRecord 이력서 관리 서비스">
+                        </div>
+                        <div class="field">
+                            <label for="input-proj1-role">역할</label>
+                            <input id="input-proj1-role" type="text" placeholder="백엔드 개발 / 팀장">
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <div class="field">
+                            <label for="input-proj1-period">기간</label>
+                            <input id="input-proj1-period" type="text" placeholder="2025.03 ~ 2025.06">
+                        </div>
+                        <div class="field">
+                            <label for="input-proj1-tech">사용 기술</label>
+                            <input id="input-proj1-tech" type="text" placeholder="Java, Spring Boot, MySQL">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="input-proj1-desc">프로젝트 설명</label>
+                        <textarea id="input-proj1-desc" placeholder="서비스 목적, 담당 기능, 성과 등을 간단히 작성"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" class="add-button" id="add-project-btn">
+                + 프로젝트 추가
+            </button>
+
+            <h3 class="section-title">기술 스택 섹션</h3>
+            <div class="field">
+                <label for="input-skill-list">보유 기술</label>
+                <textarea id="input-skill-list" placeholder="예) Java, Spring, JPA, MySQL, Redis, Git, Docker"></textarea>
+                <p class="hint">쉼표(,)로 구분해서 작성하면 자동으로 태그로 변환됩니다.</p>
+            </div>
+        </section>
+
+        <!-- ===================== 우측 미리보기 영역 ===================== -->
+        <section class="preview">
+            <!-- 상단 제목 + 설명 + PDF 버튼 -->
+            <div class="preview-header-row">
+                <div>
+                    <h2>이력서 템플릿 미리보기</h2>
+                    <span class="preview-subtitle">
+                        &lt; / &gt; 버튼이나 아래 점을 눌러 템플릿을 바꿔보세요.
+                    </span>
+                </div>
+                <!-- ✅ resume-edit.js에서 .download-pdf-btn 클래스로 찾음 -->
+                <button type="button" class="top-btn primary download-pdf-btn" id="download-pdf-btn">
+                    PDF 내보내기
+                </button>
+            </div>
+
+            <!-- 좌우 버튼 + 점 + 1/6 표시 -->
+            <div class="template-preview-nav">
+                <div class="nav-buttons">
+                    <button type="button" class="nav-btn" id="prev-template">&lt;</button>
+                    <span class="template-index" id="template-indicator">1 / 6</span>
+                    <button type="button" class="nav-btn" id="next-template">&gt;</button>
+                </div>
+
+                <div class="template-dots" id="template-dots">
+                    <button type="button" class="template-dot active" data-index="0"></button>
+                    <button type="button" class="template-dot" data-index="1"></button>
+                    <button type="button" class="template-dot" data-index="2"></button>
+                    <button type="button" class="template-dot" data-index="3"></button>
+                    <button type="button" class="template-dot" data-index="4"></button>
+                    <button type="button" class="template-dot" data-index="5"></button>
+                </div>
+            </div>
+
+            <!-- 실제 이력서 미리보기 (템플릿 1) -->
+            <div class="resume-wrapper template-1">
+                <header class="resume-header">
+                    <div class="resume-photo">
+                        <div class="resume-photo-box" id="preview-photo-box">
+                            사진 영역
+                        </div>
+                    </div>
+
+                    <div class="resume-header-main">
+                        <div>
+                            <div class="resume-name-block">
+                                <h1 id="preview-name">홍길동</h1>
+                                <p id="preview-summary">
+                                    Java/Spring 기반 백엔드 개발자, 유지보수와 성능 개선에 강점
+                                </p>
+                            </div>
+                        </div>
+                        <div class="resume-contact">
+                            <div class="resume-birth" id="preview-birth">2000-01-01</div>
+                            <div id="preview-phone">010-1234-5678</div>
+                            <div id="preview-email">user@example.com</div>
+                        </div>
+                    </div>
+                </header>
+
+                <section class="resume-section" id="preview-education-section">
+                    <h3 class="resume-section-title">학력</h3>
+                    <div class="resume-item">
+                        <div class="resume-item-header">
+                            <span id="preview-edu-school">부천대학교</span>
+                            <span id="preview-edu-period">2023.03 ~ 재학</span>
+                        </div>
+                        <div class="resume-item-sub" id="preview-edu-major">
+                            컴퓨터공학과 / 학사과정
+                        </div>
+                    </div>
+                </section>
+
+                <section class="resume-section" id="preview-experience-section">
+                    <h3 class="resume-section-title">경력</h3>
+
+                    <!-- 🔹 경력 미리보기 아이템 리스트 -->
+                    <div id="preview-experience-list">
+                        <!-- 경력 1 기본 템플릿 -->
+                        <div class="resume-item" data-exp-index="1">
+                            <div class="resume-item-header">
+                                <span id="preview-exp1-company">OOO 주식회사</span>
+                                <span id="preview-exp1-period">2024.01 ~ 2024.06</span>
+                            </div>
+                            <div class="resume-item-sub" id="preview-exp1-position">
+                                백엔드 개발자
+                            </div>
+                            <div class="resume-item-desc" id="preview-exp1-desc">
+                                Spring Boot 기반 REST API 개발 및 유지보수,
+                                DB 쿼리 튜닝, 장애 대응 및 로그 모니터링을 담당했습니다.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="resume-section" id="preview-project-section">
+                    <h3 class="resume-section-title">프로젝트</h3>
+
+                    <!-- 🔹 프로젝트 미리보기 아이템 리스트 -->
+                    <div id="preview-project-list">
+                        <!-- 프로젝트 1 기본 템플릿 -->
+                        <div class="resume-item" data-proj-index="1">
+                            <div class="resume-item-header">
+                                <span id="preview-proj1-name">JobRecord 이력서 관리 서비스</span>
+                                <span id="preview-proj1-period">2025.03 ~ 2025.06</span>
+                            </div>
+                            <div class="resume-item-sub" id="preview-proj1-role">
+                                백엔드 개발 / 팀장 · Java, Spring Boot, MySQL
+                            </div>
+                            <div class="resume-item-desc" id="preview-proj1-desc">
+                                사용자의 이력서를 섹션 단위로 관리하고,
+                                추후 채용 공고 추천에 활용할 수 있는 시스템을 설계·구현했습니다.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="resume-section" id="preview-skill-section">
+                    <h3 class="resume-section-title">기술 스택</h3>
+                    <div class="resume-skill-list" id="preview-skill-list">
+                        <span class="resume-tag">Java</span>
+                        <span class="resume-tag">Spring Boot</span>
+                        <span class="resume-tag">JPA</span>
+                        <span class="resume-tag">MySQL</span>
+                        <span class="resume-tag">Redis</span>
+                        <span class="resume-tag">Git</span>
+                        <span class="resume-tag">Docker</span>
+                    </div>
+                </section>
+            </div>
+        </section>
+    </main>
+</div>
+
+<!-- 우측 하단 플로팅 버튼: 최종 저장 -->
+<div class="floating-create-btn">
+    <button type="button" class="create-btn">이력서 생성하기</button>
+</div>
+
+<!-- ✅ PDF 관련 로직은 전부 /js/resume-edit.js 안에 있음 -->
+<script src="/js/env.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/theme-toggle.js"></script>
+<script src="/js/resume-edit.js"></script>
+</body>
+</html>

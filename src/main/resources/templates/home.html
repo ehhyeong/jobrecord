@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Record - 이력서 작성부터 채용공고까지</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="/css/home.css" th:href="@{/css/home.css}">
+</head>
+<body>
+    <!-- 헤더 -->
+    <header class="header-container">
+        <div class="header-top-bar">
+            <a href="/" class="logo-top">
+                <img src="/img/logo.png" alt="Job Record" class="logo-img-top">
+            </a>
+            
+            <div class="header-buttons">
+                <div class="theme-toggle-wrapper">
+                    <button class="theme-toggle" id="theme-toggle" title="다크모드 전환">
+                        <div class="theme-toggle-slider">🌙</div>
+                    </button>
+                </div>
+                <a href="/auth/login" class="login-button-header">로그인</a>
+            </div>
+        </div>
+
+        <section class="hero-section">
+            <h2>이력서 작성부터<br>채용공고 탐색까지</h2>
+            <p>강력한 툴과 잡코리아 실시간 연동으로<br>효율적인 취업 준비를 경험하세요</p>
+        </section>
+    </header>
+
+    <!-- 메인 콘텐츠 -->
+    <main class="main-container">
+        <!-- 주요 기능 (3개 카드) -->
+        <section class="features-section">
+            <div class="feature-card">
+                <div class="feature-icon">📝</div>
+                <h3>빠르고 쉬운<br>이력서 작성</h3>
+                <p>6가지 전문 템플릿으로 5분 만에 완성하는 온라인 이력서. 직관적인 인터페이스로 누구나 쉽게 작성할 수 있습니다.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>AI 기반<br>맞춤 채용 추천</h3>
+                <p>작성한 이력서를 분석하여 가장 적합한 채용공고를 자동으로 추천. 취업 성공률을 높이는 스마트한 매칭 시스템.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔗</div>
+                <h3>잡코리아<br>실시간 연동</h3>
+                <p>300만 건 이상의 채용공고 중 당신에게 딱 맞는 최신 정보를 실시간으로 제공합니다.</p>
+            </div>
+        </section>
+
+        <!-- 잡코리아 CTA -->
+        <section class="jobkorea-cta">
+            <h2>지금 바로 잡코리아<br>채용공고 확인하기</h2>
+            <p>당신의 이력서에 딱 맞는 채용공고를 찾아보세요</p>
+            <a href="/auth/login">로그인하고 채용공고 보러가기 →</a>
+        </section>
+
+        <!-- 장점 섹션 -->
+        <section class="benefits-section">
+            <h2>Job Record가 특별한 이유</h2>
+            
+            <div class="benefits-grid">
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <img src="/img/customer_13790815.png" alt="온라인 이력서 아이콘">
+                    </div>
+                    <h4>온라인 이력서, 5분 만에 완성</h4>
+                    <p>직관적인 인터페이스와 다양한 양식을 통해 온라인 이력서를 완성할 수 있습니다. 개인 정보를 입력하고 원하는 양식을 선택해 바로 다운로드 받으세요.</p>
+                </div>
+
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <img src="/img/search_17867792.png" alt="맞춤 정보 아이콘">
+                    </div>
+                    <h4>내 이력서 기반 맞춤 채용 추천</h4>
+                    <p>더 이상 조건 없는 검색은 그만. 당신이 작성한 이력서의 경력, 희망 직무를 분석하여 취업 성공 가능성이 높은 가장 적합한 채용 정보만을 제공합니다.</p>
+                </div>
+
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <img src="/img/free-icon-document-7871149.png" alt="문서 관리 아이콘">
+                    </div>
+                    <h4>이력서 및 구직 활동 체계적 관리</h4>
+                    <p>다양한 버전의 이력서를 쉽게 수정하고 보관할 수 있습니다. 작성한 이력서와 지원 이력을 한 곳에 모아 체계적으로 관리하며 효율적인 구직을 진행하세요.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 템플릿 섹션 -->
+        <section class="templates-section">
+            <div class="templates-content">
+                <h2>자신만의 이력서를 만들어보세요</h2>
+                <div class="templates-grid">
+                    <div class="template-item">
+                        <img src="/img/template-1.png" alt="이력서 템플릿 1">
+                    </div>
+                    <div class="template-item">
+                        <img src="/img/template-2.png" alt="이력서 템플릿 2">
+                    </div>
+                    <div class="template-item">
+                        <img src="/img/template-3.png" alt="이력서 템플릿 3">
+                    </div>
+                    <div class="template-item">
+                        <img src="/img/template-4.png" alt="이력서 템플릿 4">
+                    </div>
+                    <div class="template-item">
+                        <img src="/img/template-5.png" alt="이력서 템플릿 5">
+                    </div>
+                    <div class="template-item">
+                        <img src="/img/template-6.png" alt="이력서 템플릿 6">
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 푸터 -->
+    <footer class="footer-container">
+        <div class="footer-content">
+            <div class="footer-column">
+                <a href="/" class="logo-bottom">
+                    <img src="/img/logo.png" alt="Job Record" class="logo-img-bottom">
+                </a>
+                <p>이력서 작성과 채용 공고 탐색을 한 곳에서.<br>
+                   당신의 모든 커리어 경험을 완벽하게 기록하고,<br>
+                   합격에 가까운 기회를 실시간으로 연결합니다.</p>
+            </div>
+            <div class="footer-column">
+                <h4>서비스</h4>
+                <a href="/auth/login">이력서 작성하기</a>
+                <a href="/auth/login">채용공고 추천</a>
+            </div>
+            <div class="footer-column">
+                <h4>지원</h4>
+                <a href="#">회사소개</a>
+                <a href="#">문의하기</a>
+                <a href="#">자주 묻는 질문</a>
+            </div>
+            <div class="footer-column">
+                <h4>약관</h4>
+                <a href="#">개인 정보 보호 및 쿠키 정책</a>
+                <a href="#">이용 약관</a>
+            </div>
+        </div>
+        
+        <div class="footer-copyright">
+            <p>© 2025 JobRecord.co.kr</p>
+            <p>|</p>
+            <p>이용 약관</p>
+            <p>|</p>
+            <p>개인 정보 보호 및 쿠키 정책</p>
+        </div>
+    </footer>
+
+    <script src="/js/theme-toggle.js"></script>
+</body>
+</html>

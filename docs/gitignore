@@ -1,0 +1,39 @@
+# === Build artifacts ===
+/build/
+/out/
+/bin/
+/target/
+
+# === Gradle ===
+.gradle/
+!gradle/wrapper/gradle-wrapper.jar
+.gradle-cache/
+**/.gradletasknamecache
+
+# === IntelliJ/IDE ===
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# === Logs ===
+logs/
+*.log
+
+# === OS files ===
+.DS_Store
+Thumbs.db
+
+# === Node (future frontend) ===
+node_modules/
+dist/
+
+# === Environment / Secrets ===
+*.env
+.env*
+src/main/resources/application-local.yml
+src/main/resources/application-*.local.yml
+
+# === Docker volumes (local data) ===
+**/mysql-data/
+**/redis-data/

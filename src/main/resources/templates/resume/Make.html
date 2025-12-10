@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Record - 내 초안</title>
+    <!-- CSS 파일은 Makestyle.css를 참조 -->
+    <link rel="stylesheet" href="/css/Make.css">
+    <!-- 'Inter' 폰트 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="dashboard-container">
+
+        <!-- 1. 좌측 사이드바 (Sidebar) -->
+        <nav class="sidebar">
+            <!-- 2233076 13주차 추가: 로고 이미지로 변경 및 클릭 시 user/home 이동 -->
+            <a href="/user/home" class="logo-job-record">
+                <img src="/img/logo.png" alt="Job Record" class="sidebar-logo-img">
+            </a> 
+
+            <div class="sidebar-menu">
+                <div class="menu-category">메뉴</div>
+                
+                <!-- 활성화된 메뉴: 내 초안 -->
+                <a href="#" class="menu-item active-menu">
+                    <div class="bullet-icon"></div>
+                    <span>내 초안</span>
+                </a>
+                
+                <!-- 비활성화 메뉴: 채용공고 추천 -->
+                <a href="/resume-job-recommendations" class="menu-item">
+                    <div class="bullet-icon"></div>
+                    <span>채용공고 추천</span>
+                </a>
+            </div>
+        </nav>
+
+        <!-- 2. 메인 콘텐츠 영역 (Main Content) -->
+        <main class="main-content">
+            
+            <!-- 2-1. 메인 콘텐츠 상단 헤더 (유저 정보) -->
+            <div class="main-content-header">
+                
+                <!-- 다크모드 토글 스위치 -->
+                <div class="theme-toggle-wrapper" style="margin-right: auto;">
+                    <button class="theme-toggle" id="theme-toggle" title="다크모드 전환">
+                        <div class="theme-toggle-slider">🌙</div>
+                    </button>
+                </div>
+
+                <div class="user-profile-wrapper" style="position: relative;">
+                    
+                    <div id="user-profile-btn" class="user-profile-section-top" style="cursor: pointer;">
+                        <div class="user-details-small">
+                            <div class="user-name-small">Park ju seung</div>
+                            <div class="user-email-small">jobrecord@naver.com</div>
+                        </div>
+                        <div class="avatar-icon-small">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                                 class="w-6 h-6">
+                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div id="user-profile-dropdown" class="profile-dropdown-menu">
+                        <ul>
+                            <li><a href="/mypage" th:href="@{/mypage}">내 계정 관리</a></li>
+                            <li class="separator-line"></li>
+                            <li><a href="#" class="logout-option">로그아웃</a></li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 2-2. 내 초안 섹션 (My Drafts) -->
+            <section class="section-drafts">
+                <div class="section-drafts-header">
+                    <h2 class="section-title">내 초안</h2>
+                    
+                    <!-- 2233073 김용하 12주차 : 새 이력서 초안 생성 + 편집 화면(/resume/edit)으로 이동하는 버튼 -->
+                    <a href="/resume/edit" th:href="@{/resume/edit}" id="new-resume-btn" class="new-draft-button">
+                        <span class="plus-icon">+</span> 
+                        새 이력서
+                    </a>    
+                </div>
+
+                <!-- 내 초안 제목 아래 회색 구분선 -->
+                <div class="separator"></div>
+                
+                <div class="drafts-container">
+                    <!-- 더미 예시 카드 (실제 목록은 Make.js에서 동적 렌더링) -->
+                    <div class="draft-card">
+                        <div class="draft-card-preview"></div> 
+                        <div class="draft-card-info">
+                            <span class="draft-name">이력서1</span>
+                            <!-- 옵션 버튼 (SVG: Three Dots icon) -->
+                            <div class="draft-options-wrapper" style="position: relative;">
+
+                                <button id="draft-options-btn" class="draft-options-button">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                         class="w-4 h-4">
+                                        <circle cx="12" cy="12" r="1"></circle>
+                                        <circle cx="19" cy="12" r="1"></circle>
+                                        <circle cx="5" cy="12" r="1"></circle>
+                                    </svg>
+                                </button>
+
+                                <div id="draft-dropdown" class="draft-dropdown-menu">
+                                    <ul>
+                                        <li><a href="#">이름 변경</a></li>
+                                        <li><a href="#" class="delete-option">삭제</a></li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </section>
+
+            <!-- 2-3. 템플릿 섹션 (Templates) -->
+            <section class="section-templates">
+                <h2 class="section-title">템플릿</h2>
+                
+                <!-- 템플릿 제목 아래 회색 구분선 -->
+                <div class="separator"></div>
+                
+                <!-- 템플릿 목록 (가로 스크롤) -->
+                <div class="template-grid">
+                    
+                    <!-- 2233076 13주차: 템플릿 이미지 사용 -->
+                    <!-- 템플릿 카드 1 -->
+                    <div class="template-card selected" data-template-index="1">
+                        <img src="/img/template-1.png" alt="Template 1 Preview" class="template-image">
+                    </div>
+                    
+                    <!-- 템플릿 카드 2 -->
+                    <div class="template-card" data-template-index="2">
+                        <img src="/img/template-2.png" alt="Template 2 Preview" class="template-image">
+                    </div>
+                    
+                    <!-- 템플릿 카드 3 -->
+                    <div class="template-card" data-template-index="3">
+                        <img src="/img/template-3.png" alt="Template 3 Preview" class="template-image">
+                    </div>
+                    
+                    <!-- 템플릿 카드 4 -->
+                    <div class="template-card" data-template-index="4">
+                        <img src="/img/template-4.png" alt="Template 4 Preview" class="template-image">
+                    </div>
+                    
+                    <!-- 템플릿 카드 5 -->
+                    <div class="template-card" data-template-index="5">
+                        <img src="/img/template-5.png" alt="Template 5 Preview" class="template-image">
+                    </div>
+
+                    <!-- 템플릿 카드 6 -->
+                    <div class="template-card" data-template-index="6">
+                        <img src="/img/template-6.png" alt="Template 6 Preview" class="template-image">
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 2233076 13주차 추가: 템플릿 이미지 확대 팝업 -->
+    <div id="template-preview-modal" class="template-modal">
+        <div class="template-modal-overlay"></div>
+        <div class="template-modal-content">
+            <button class="template-modal-close">&times;</button>
+            <img id="template-modal-image" src="" alt="Template Preview">
+        </div>
+    </div>
+
+    <script src="/js/env.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/theme-toggle.js"></script>
+    <script src="/js/Make.js"></script>
+</body>
+</html>

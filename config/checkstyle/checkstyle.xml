@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="Checker">
+  <property name="charset" value="UTF-8"/>
+
+  <module name="FileLength"><property name="max" value="200"/></module>
+
+  <module name="LineLength">
+    <property name="max" value="80"/>
+    <property name="ignorePattern" value="^package|^import|https?://"/>
+    <property name="fileExtensions" value="java"/>
+  </module>
+
+  <module name="SuppressWarningsHolder"/>
+
+  <module name="TreeWalker">
+    <module name="AvoidStarImport"/>
+    <module name="UnusedImports"/>
+    <module name="RedundantImport"/>
+
+    <module name="MethodLength">
+      <property name="max" value="70"/>
+      <property name="countEmpty" value="false"/>
+    </module>
+
+    <module name="LeftCurly">
+      <property name="option" value="eol"/>
+      <property name="tokens" value="CLASS_DEF,INTERFACE_DEF,ENUM_DEF,METHOD_DEF,CTOR_DEF,LAMBDA,OBJBLOCK,RECORD_DEF"/>
+    </module>
+    <module name="RightCurly">
+      <property name="option" value="alone"/>
+      <property name="tokens" value="CLASS_DEF,INTERFACE_DEF,ENUM_DEF,METHOD_DEF,CTOR_DEF,LITERAL_TRY,LITERAL_CATCH,LITERAL_FINALLY,LITERAL_IF,LITERAL_ELSE,LITERAL_DO,LITERAL_WHILE,LITERAL_FOR,STATIC_INIT,INSTANCE_INIT,RECORD_DEF"/>
+    </module>
+
+    <module name="Indentation">
+      <property name="basicOffset" value="2"/>
+      <property name="braceAdjustment" value="0"/>
+      <property name="caseIndent" value="2"/>
+      <property name="throwsIndent" value="2"/>
+      <property name="lineWrappingIndentation" value="2"/>
+    </module>
+
+    <module name="TypeName"><property name="format" value="^[A-Z][a-zA-Z0-9]*$"/></module>
+    <module name="ConstantName"><property name="format" value="^[A-Z][A-Z0-9_]*$"/></module>
+    <module name="LocalVariableName"><property name="format" value="^[a-z][a-zA-Z0-9]*$"/></module>
+    <module name="MemberName"><property name="format" value="^[a-z][a-zA-Z0-9]*$"/></module>
+    <module name="ParameterName"><property name="format" value="^[a-z][a-zA-Z0-9]*$"/></module>
+    <module name="MethodName">
+      <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+      <property name="allowClassName" value="false"/>
+    </module>
+
+    <module name="NeedBraces"/>
+    <module name="EmptyCatchBlock">
+      <property name="exceptionVariableName" value="ignored|unused|e"/>
+      <property name="allowEmptyCatch" value="false"/>
+    </module>
+    <module name="FinalParameters"/>
+    <module name="ModifierOrder"/>
+    <module name="WhitespaceAround"/>
+    <module name="WhitespaceAfter"/>
+    <module name="NoLineWrap"/>
+  </module>
+</module>

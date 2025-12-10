@@ -1,0 +1,411 @@
+/* --- 기본 설정 (초기화) --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; 
+}
+
+/* 라이트 모드 (기본) */
+:root {
+    --bg-color: #FFFFFF;
+    --text-primary: #000000;
+    --text-secondary: #8A8A8A;
+    --text-placeholder: #B9B9B9;
+    --border-color: #707070;
+    --input-bg: #FFFFFF;
+    --button-disabled-bg: #E1E1E1;
+    --button-disabled-text: #5A5A5A;
+    --accent-color: #0055FF;
+    --modal-bg: #FFFFFF;
+}
+
+/* 다크 모드 */
+[data-theme="dark"] {
+    --bg-color: #1f2937;
+    --text-primary: #f9fafb;
+    --text-secondary: #d1d5db;
+    --text-placeholder: #9ca3af;
+    --border-color: #374151;
+    --input-bg: #111827;
+    --button-disabled-bg: #374151;
+    --button-disabled-text: #9ca3af;
+    --accent-color: #fb923c;
+    --modal-bg: #1f2937;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    /* 'pattern.jpg' 파일이 이 css 파일과 같은 폴더에 있어야 합니다 */
+    background-image: url("/img/office.jpg"); 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: rgba(0, 0, 0, 0.14); /* (1 - 0.86 opacity) */
+    background-blend-mode: multiply;
+
+    /* --- Flexbox 중앙 정렬 --- */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    transition: background-color 0.3s ease;
+}
+
+[data-theme="dark"] body {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* --- 흰색 박스 (login-container) --- */
+.login-container {
+    width: 100%;
+    max-width: 650px; /* XD 코드 기준 (35% ~ 34%) */
+    padding: 60px 80px;
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: background-color 0.3s ease;
+    position: relative;
+}
+
+/* 다크모드 토글 스위치 */
+.theme-toggle {
+    position: relative;
+    width: 52px;
+    height: 28px;
+    background: var(--border-color);
+    border-radius: 14px;
+    border: 2px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.theme-toggle-slider {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: #FFFFFF;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .theme-toggle {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+[data-theme="dark"] .theme-toggle-slider {
+    left: 26px;
+}
+
+/* 1. 제목/부제목 영역 */
+.header-section {
+    text-align: center;
+    margin-bottom: 40px;
+}
+/* 2233076 13주차 추가: 로고 링크 및 이미지 스타일 */
+.header-section .logo-link {
+    display: inline-block;
+    text-decoration: none;
+}
+.header-section .logo-img {
+    height: 60px;
+    width: auto;
+    object-fit: contain;
+    margin-bottom: 10px;
+    transition: filter 0.3s ease;
+}
+[data-theme="dark"] .header-section .logo-img {
+    filter: brightness(0) invert(1);
+}
+.header-section h1 {
+    font-size: 60px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+.header-section h2 {
+    font-size: 40px;
+    font-weight: 400;
+    color: var(--text-primary);
+    margin-top: 10px;
+}
+.header-section p {
+    font-size: 30px;
+    color: var(--text-placeholder);
+    margin-top: 20px;
+}
+
+/* 2. 로그인 폼 */
+.login-form {
+    width: 100%;
+    margin-bottom: 30px;
+}
+.input-group {
+    width: 100%;
+    margin-bottom: 25px;
+}
+.input-group label {
+    font-size: 15px;
+    color: var(--text-placeholder);
+    display: block;
+    margin-bottom: 10px;
+}
+.input-wrapper {
+    position: relative;
+}
+.input-wrapper i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-placeholder);
+    font-size: 18px;
+    z-index: 1;
+}
+.input-wrapper input {
+    width: 100%;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 16px 16px 16px 45px;
+    font-size: 16px;
+    color: var(--text-primary);
+}
+.input-wrapper input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+/* 2233076 13주차 추가: 비밀번호 표시/숨김 토글 버튼 스타일 */
+/* 비밀번호 필드 전용 */
+.password-wrapper {
+    position: relative;
+}
+.password-wrapper input {
+    padding-right: 50px;
+}
+.password-toggle {
+    position: absolute;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #B9B9B9;
+    font-size: 18px;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transition: color 0.2s;
+}
+.password-toggle:hover {
+    color: #0055FF;
+}
+
+/* 2233076 13주차 추가: Caps Lock 경고 스타일 */
+/* Caps Lock 경고 */
+.caps-lock-warning {
+    color: #f57c00;
+    font-size: 12px;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* 3. 로그인 버튼 */
+.login-button {
+    width: 100%;
+    padding: 15px 0;
+    font-size: 30px;
+    font-weight: 400;
+    background: var(--button-disabled-bg);
+    border: 1px solid var(--border-color);
+    color: var(--button-disabled-text);
+    border-radius: 4px;
+    cursor: not-allowed; 
+}
+.login-button.active {
+    background: var(--accent-color);
+    color: #FFFFFF;
+    border-color: var(--accent-color);
+    cursor: pointer;
+}
+
+/* SNS Log-in 관련 스타일 삭제됨 */
+
+/* 5. 하단 링크 */
+.links-section {
+    text-align: center;
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+.links-section p {
+    color: var(--text-secondary);
+}
+.links-section a {
+    color: var(--accent-color);
+    text-decoration: underline;
+    font-weight: 600;
+}
+.links-section a:hover {
+    text-decoration: none;
+}
+
+/* 6. 약관 */
+.terms-section {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-align: center;
+    line-height: 1.5;
+}
+
+/* 에러/메시지 텍스트 */
+.error-text {
+    color: #d32f2f;
+    font-size: 12px;
+    margin-top: 6px;
+}
+
+/* ---------- 비밀번호 찾기 모달 ---------- */
+
+.reset-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.reset-modal-overlay.open {
+    display: flex;
+}
+
+.reset-modal {
+    width: 100%;
+    max-width: 420px;
+    background: var(--modal-bg);
+    border-radius: 8px;
+    padding: 24px 28px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.reset-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+.reset-modal-header h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+.reset-modal-close {
+    border: none;
+    background: transparent;
+    font-size: 24px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.reset-modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.reset-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.reset-section label {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+/* 입력 공통 */
+.reset-input {
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 10px 12px;
+    font-size: 14px;
+    width: 100%;
+    background: var(--input-bg);
+    color: var(--text-primary);
+}
+
+/* 버튼 공통 */
+.reset-button {
+    margin-top: 8px;
+    padding: 10px 0;
+    border-radius: 4px;
+    border: none;
+    background: var(--accent-color);
+    color: #FFFFFF;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* 작은 버튼 (오른쪽 정렬용) */
+.reset-button.small {
+    padding-inline: 16px;
+    width: auto;
+    min-width: 130px;   /* 두 파란 버튼 폭 비슷하게 */
+}
+
+/* 구분선 */
+.reset-divider {
+    border: none;
+    border-top: 1px solid #E1E1E1;
+    margin: 8px 0;
+}
+
+/* 인증번호 / 새 비밀번호 한 줄 정렬 */
+.reset-code-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.reset-code-row label {
+    width: 90px;
+    flex-shrink: 0;
+    white-space: nowrap;  /* 줄바꿈 방지 */
+}
+.reset-code-row .reset-input {
+    flex: 1;
+}
+
+/* 오른쪽으로 버튼 몰기 */
+.reset-code-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 4px;
+    gap: 8px;
+}
+.reset-code-actions .reset-button {
+    width: auto;
+    padding-inline: 16px;
+}

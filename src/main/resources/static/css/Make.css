@@ -1,0 +1,591 @@
+/* 기본 초기화 */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+}
+
+/* 색상 변수 */
+:root {
+    --color-primary-text: #6b7280;
+    --color-accent-orange: #f97316;
+    --color-accent-orange-hover: #ea580c;
+    --color-sidebar-bg: #FFFFFF;
+    --color-main-bg: #f9fafb;
+    --border-color: #e5e7eb;
+    --active-menu-bg: #fff7ed;
+    --logo-color: #1f2937;
+    --menu-text-color: #374151;
+    --card-bg: #FFFFFF;
+    --text-primary: #000000;
+}
+
+/* 다크 모드 */
+[data-theme="dark"] {
+    --color-primary-text: #9ca3af;
+    --color-accent-orange: #fb923c;
+    --color-accent-orange-hover: #f97316;
+    --color-sidebar-bg: #1f2937;
+    --color-main-bg: #111827;
+    --border-color: #374151;
+    --active-menu-bg: #431407;
+    --logo-color: #f9fafb;
+    --menu-text-color: #d1d5db;
+    --card-bg: #1f2937;
+    --text-primary: #f9fafb;
+}
+
+body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* 1. 전체 페이지 컨테이너 */
+.dashboard-container {
+    display: flex; 
+    width: 100vw; 
+    min-height: 100vh;
+    background-color: var(--color-main-bg); 
+}
+
+/* 2. 왼쪽 사이드바 */
+.sidebar {
+    width: 250px; 
+    flex-shrink: 0;
+    background: var(--color-sidebar-bg);
+    border-right: 1px solid var(--border-color); 
+    padding-bottom: 20px;
+    position: fixed; 
+    top: 0;
+    left: 0;
+    height: 100%;
+    z-index: 200;
+}
+
+/* 2233076 13주차 추가: 로고를 링크로 변경하고 이미지 표시 */
+.logo-job-record {
+    padding: 30px 20px; 
+    font-size: 24px; 
+    font-weight: 500;
+    color: var(--logo-color);
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.sidebar-logo-img {
+    height: 60px;
+    width: auto;
+    object-fit: contain;
+    transition: filter 0.3s ease;
+}
+
+[data-theme="dark"] .sidebar-logo-img {
+    filter: brightness(0) invert(1);
+}
+
+.menu-category {
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--color-primary-text);
+    margin-bottom: 5px;
+    padding: 0 20px;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--menu-text-color);
+    padding: 10px 20px; 
+    margin-bottom: 2px;
+    transition: background-color 0.1s, color 0.1s;
+}
+
+.menu-item:hover {
+    background-color: rgba(0, 0, 0, 0.05); 
+}
+
+/* 활성화된 메뉴 스타일 */
+.menu-item.active-menu {
+    background-color: var(--active-menu-bg); 
+    color: var(--color-accent-orange);
+    font-weight: 600;
+    border-right: 3px solid var(--color-accent-orange); 
+}
+
+.bullet-icon {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-primary-text); 
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+
+.menu-item.active-menu .bullet-icon {
+    background: var(--color-accent-orange); 
+}
+
+/* 3. 메인 콘텐츠 영역 */
+.main-content {
+    flex-grow: 1;
+    margin-left: 250px; 
+    background-color: var(--color-main-bg);
+    padding: 0 40px; 
+}
+
+/* 메인 콘텐츠 상단 헤더 (유저 정보) */
+.main-content-header {
+    display: flex;
+    justify-content: flex-end; 
+    align-items: center;
+    padding: 15px 0; 
+    margin-bottom: 40px; 
+    border-bottom: 1px solid var(--border-color);
+    position: sticky; 
+    top: 0;
+    background-color: var(--color-main-bg);
+    z-index: 100;
+}
+
+/* 2233076 13주차 추가: 다크모드 토글 스위치 */
+.theme-toggle-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.theme-toggle {
+    position: relative;
+    width: 52px;
+    height: 28px;
+    background: var(--border-color);
+    border-radius: 14px;
+    border: 2px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+}
+
+.theme-toggle:hover {
+    background: var(--color-accent-orange);
+    border-color: var(--color-accent-orange);
+}
+
+.theme-toggle-slider {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: #FFFFFF;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .theme-toggle {
+    background: var(--color-accent-orange);
+    border-color: var(--color-accent-orange);
+}
+
+[data-theme="dark"] .theme-toggle-slider {
+    left: 26px;
+}
+
+/* 우측 상단 사용자 정보 */
+.user-profile-section-top {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-name-small {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.user-email-small {
+    font-size: 13px;
+    color: var(--color-primary-text);
+}
+
+.avatar-icon-small {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--color-primary-text);
+    background-color: var(--color-sidebar-bg);
+}
+
+/* A. '내 초안' 섹션 */
+.section-drafts {
+    padding-top: 20px;
+    margin-bottom: 50px;
+}
+
+.section-drafts-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 0; 
+}
+
+.section-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* 회색 구분선 */
+.separator {
+    width: 100%;
+    height: 1px;
+    background-color: #D3D3D3; /* Light Gray */
+    margin-top: 10px; 
+    margin-bottom: 20px; /* 아래 콘텐츠와의 간격 */
+}
+
+/* 새 이력서 버튼 */
+.new-draft-button {
+    display: flex;
+    align-items: center;
+    padding: 5px 15px;
+    background-color: var(--color-accent-orange);
+    border: none;
+    border-radius: 5px; 
+    color: #FFFFFF;
+    font-size: 15px; 
+    cursor: pointer;
+    font-weight: 500;
+    gap: 5px; 
+    transition: background-color 0.2s;
+}
+
+.new-draft-button:hover {
+    background-color: var(--color-accent-orange-hover);
+}
+
+.new-draft-button .plus-icon {
+    font-size: 18px; 
+    line-height: 1;
+}
+
+a.new-draft-button {
+    text-decoration: none;
+}
+
+a.new-draft-button:hover,
+a.new-draft-button:focus,
+a.new-draft-button:active {
+    text-decoration: none;
+}
+
+.new-draft-button span {
+    text-decoration: none;
+}
+
+.drafts-container {
+    display: flex;
+    gap: 20px; 
+    margin-top: 10px; /* 제목/선과 카드 사이 여백 */
+}
+
+.draft-card {
+    width: 150px; 
+    height: 190px; 
+    flex-shrink: 0;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+    display: flex;
+    flex-direction: column; 
+    transition: box-shadow 0.2s;
+}
+
+.draft-card:hover {
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+}
+
+.draft-card-preview {
+    flex-grow: 1; 
+    background-color: #F8F8F8; 
+    border-bottom: 1px solid var(--border-color);
+    
+    /* ★★★ 추가하세요 (위쪽 모서리 둥글게) ★★★ */
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.draft-card-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    font-size: 14px;
+    color: var(--text-primary);
+}
+
+.draft-options-button {
+    background: none;
+    border: none;
+    color: var(--color-primary-text);
+    cursor: pointer;
+    padding: 0;
+    height: 18px; 
+    display: flex;
+    align-items: center;
+}
+/* 옵션 버튼 래퍼 (위치 기준점) */
+.draft-options-wrapper {
+    position: relative;
+}
+
+.draft-options-button {
+    background: none;
+    border: none;
+    color: var(--color-primary-text);
+    cursor: pointer;
+    padding: 0;
+    height: 18px; 
+    display: flex;
+    align-items: center;
+}
+/* ★★★ 드롭다운 메뉴 스타일 ★★★ */
+.draft-dropdown-menu {
+    display: none; /* 평소엔 숨김 */
+    position: absolute;
+    top: 100%; /* 버튼 바로 아래 */
+    right: 0;
+    background-color: #FFFFFF;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 10;
+    min-width: 120px;
+    padding: 5px 0;
+}
+
+/* 자바스크립트로 active 클래스가 붙으면 보임 */
+.draft-dropdown-menu.active {
+    display: block;
+}
+
+.draft-dropdown-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.draft-dropdown-menu li a {
+    display: block;
+    padding: 8px 15px;
+    font-size: 13px;
+    color: #333;
+    text-decoration: none;
+    transition: background-color 0.1s;
+}
+
+.draft-dropdown-menu li a:hover {
+    background-color: #F5F5F5;
+}
+
+.draft-dropdown-menu li a.delete-option {
+    color: #FF4D4D; /* 삭제 버튼 빨간색 강조 */
+}
+
+/* B. '템플릿' 섹션 */
+.section-templates {
+    padding-top: 20px;
+    padding-bottom: 40px;
+}
+
+.section-templates .section-title {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
+.template-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr); 
+    gap: 20px; 
+    overflow-x: auto;
+    padding-bottom: 10px;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.template-card {
+    width: 160px; 
+    height: 220px; 
+    flex-shrink: 0; 
+    border: 1px solid var(--border-color);
+    background-color: var(--card-bg);
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05); 
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.template-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.template-card.selected {
+    border: 3px solid var(--color-accent-orange);
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+}
+
+.template-card .template-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    background-color: #f8f8f8;
+}
+
+@media (max-width: 1200px) {
+    .template-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
+    }
+}
+/* === 프로필 드롭다운 메뉴 스타일 === */
+
+/* 메뉴 박스 디자인 */
+.profile-dropdown-menu {
+    display: none; /* 평소엔 숨김 */
+    position: absolute;
+    top: 100%;      /* 프로필 바로 아래 */
+    right: 0;       /* 오른쪽 정렬 */
+    margin-top: 10px; /* 살짝 띄우기 */
+    background-color: #FFFFFF;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    z-index: 1000;
+    min-width: 160px; /* 메뉴 너비 */
+    padding: 8px 0;
+}
+
+/* 활성화되면 보이기 */
+.profile-dropdown-menu.active {
+    display: block;
+}
+
+.profile-dropdown-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.profile-dropdown-menu li a {
+    display: block;
+    padding: 10px 15px;
+    font-size: 14px;
+    color: #333;
+    text-decoration: none;
+    transition: background-color 0.1s;
+}
+
+.profile-dropdown-menu li a:hover {
+    background-color: #F5F5F5;
+}
+
+/* 로그아웃 버튼 스타일 (선택사항) */
+.profile-dropdown-menu li a.logout-option {
+    color: #FF4D4D;
+}
+
+/* 메뉴 내부 구분선 */
+.profile-dropdown-menu .separator-line {
+    height: 1px;
+    background-color: #E0E0E0;
+    margin: 5px 0;
+}
+
+/* 2233076 13주차 추가: 템플릿 이미지 확대 모달 */
+.template-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+}
+
+.template-modal.active {
+    display: block;
+}
+
+.template-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.template-modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 90%;
+    max-height: 90%;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.template-modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    z-index: 1;
+}
+
+.template-modal-close:hover {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.template-modal-content img {
+    max-width: 100%;
+    max-height: 80vh;
+    display: block;
+    margin: 0 auto;
+    border-radius: 4px;
+}

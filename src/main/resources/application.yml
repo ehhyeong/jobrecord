@@ -1,0 +1,98 @@
+server:
+  port: 8080
+  tomcat:
+    max-swallow-size: -1
+
+spring:
+  # 이메일 발송(SMTP) 설정
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: jobrecord.noreply@gmail.com
+    password: fver ypvg ceen teem
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  # Redis 설정 추가
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+
+  web:
+    resources:
+      add-mappings: true   # 정적 리소스 매핑 활성 (안심용)
+  thymeleaf:
+    cache: false           # 개발 중 템플릿 캐시 끔
+
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3307/jobproj_db?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=utf8&allowPublicKeyRetrieval=true&allowMultiQueries=true
+    username: db_user
+    password: db_password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      connectionInitSql: "SET NAMES utf8mb4"
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+      resolve-lazily: true
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+
+management:
+  endpoints:
+    web:
+      base-path: /api/actuator
+      exposure:
+        include: health,info
+  health:
+    db:
+      enabled: false
+
+jwt:
+  secret-key: "Sm9iUmVjb3JkX1Byb2plY3RfU2VjcmV0X0tleV9FbmNvZGVfUGxlYXNl"
+  expiration-ms: 3600000
+  refresh-expiration-ms: 1209600000
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api-docs
+  cache:
+    disabled: true
+  swagger-ui:
+    path: /docs
+    use-root-path: false
+
+# 2233076 13주차 추가
+# 잡코리아 API 설정
+jobkorea:
+  api:
+    # API 키가 없으면 Mock 데이터 사용
+    # API 키를 받으면 여기에 입력
+    url: "http://www.jobkorea.co.kr/Service_JK/Data/JK_GI_XML_List.asp?api=1284"
+    key: "1284"
+    # 기본 검색 키워드 (개발자 전용)
+    default-keywords: Java|Spring|Python|JavaScript|React|Node|백엔드|프론트엔드|풀스택|개발자
+
+# 2233076 13주차 추가
+# Gemini API 설정
+gemini:
+  api:
+    key: "AIzaSyCrZbZZL6fqvFpQ1kNfedg87zKwSygGNH0"
+    url: "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
+
+    model: "gemini-2.5-flash"
