@@ -4,7 +4,8 @@
 // - 로그아웃(/auth/logout) 호출 후 home.html로 이동
 
 // 0. API Base (env.js에서 설정했다면 그 값 사용)
-const apiBase = (window.ENV && window.ENV.API_BASE_URL) ? window.ENV.API_BASE_URL : 'http://localhost:8080';
+const apiBase =
+  (window.ENV && window.ENV.API_BASE_URL) ? window.ENV.API_BASE_URL : '';
 
 // 1. 드롭다운 토글 관련 요소
 const profileIcon = document.getElementById('profile-icon');

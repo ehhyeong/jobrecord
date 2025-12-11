@@ -1,0 +1,14 @@
+spring:
+  thymeleaf:
+    cache: false  # 템플릿 변경 바로 반영
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+logging:
+  level:
+    root: INFO
+    org.hibernate.SQL: DEBUG      # 필요 없으면 지워도 됨

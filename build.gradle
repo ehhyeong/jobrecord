@@ -23,8 +23,12 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+
+    // ✅ 개발 전용 의존성 configuration
     developmentOnly
+
     runtimeClasspath {
+        // ✅ 런타임 classpath에 developmentOnly 포함 (로컬 개발 시)
         extendsFrom developmentOnly
     }
 }
@@ -43,35 +47,38 @@ dependencies {
     // Spring Boot Data Redis 2233076 10주차 추가
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-    // ✅ View (templates/*.html 렌더링용)
+    // View (templates/*.html 렌더링용)
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
-    // ✅ Swagger (Spring Boot 3.3.x 호환)
+    // Swagger (Spring Boot 3.3.x 호환)
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
 
-    // ✅ JWT 0.11.5 (parserBuilder 사용 가능)
+    // JWT 0.11.5 (parserBuilder 사용 가능)
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     runtimeOnly   'io.jsonwebtoken:jjwt-impl:0.11.5'
     runtimeOnly   'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
-    // ✅ DB
+    // DB
     runtimeOnly 'com.mysql:mysql-connector-j'
 
-    // ✅ Flyway
+    // Flyway
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-mysql'
 
-    // ✅ Lombok
+    // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
     // ✅ Devtools (개발 편의)
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
+    // ✅ spring-dotenv (.env 로딩용, 개발 전용)
+    developmentOnly 'me.paulschwarz:spring-dotenv:4.0.0'
+
     // 융합프로젝트 김태형 12주차 : HTML 템플릿을 PDF로 변환(Flying Saucer + OpenPDF)
     implementation 'org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.22'
 
-    // ✅ Test
+    // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
 }

@@ -1,0 +1,13 @@
+spring:
+  thymeleaf:
+    cache: true   # 성능 위해 켬
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+logging:
+  level:
+    root: INFO

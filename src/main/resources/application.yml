@@ -1,15 +1,18 @@
 server:
-  port: 8080
+  port: ${SERVER_PORT:8080}
   tomcat:
     max-swallow-size: -1
 
 spring:
-  # 이메일 발송(SMTP) 설정
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+  # 이메일 발송(SMTP)
   mail:
     host: smtp.gmail.com
     port: 587
-    username: jobrecord.noreply@gmail.com
-    password: fver ypvg ceen teem
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
     default-encoding: UTF-8
     properties:
       mail:
@@ -17,22 +20,32 @@ spring:
           auth: true
           starttls:
             enable: true
-  # Redis 설정 추가
+
+  # Redis
   data:
     redis:
-      host: 127.0.0.1
-      port: 6379
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:6379}
 
   web:
     resources:
-      add-mappings: true   # 정적 리소스 매핑 활성 (안심용)
-  thymeleaf:
-    cache: false           # 개발 중 템플릿 캐시 끔
+      add-mappings: true
 
+  thymeleaf:
+    # dev/prod에서 오버라이드 (dev는 false, prod는 true)
+    cache: false
+
+  # DB 설정 (호스트/포트/계정 모두 환경변수)
   datasource:
-    url: jdbc:mysql://127.0.0.1:3307/jobproj_db?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=utf8&allowPublicKeyRetrieval=true&allowMultiQueries=true
-    username: db_user
-    password: db_password
+    url: >
+      jdbc:mysql://${DB_HOST:127.0.0.1}:${DB_PORT:3307}/${DB_NAME:jobproj_db}
+      ?useSSL=false
+      &serverTimezone=Asia/Seoul
+      &characterEncoding=utf8
+      &allowPublicKeyRetrieval=true
+      &allowMultiQueries=true
+    username: ${DB_USERNAME:db_user}
+    password: ${DB_PASSWORD:db_password}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       connectionInitSql: "SET NAMES utf8mb4"
@@ -63,13 +76,13 @@ management:
       enabled: false
 
 jwt:
-  secret-key: "Sm9iUmVjb3JkX1Byb2plY3RfU2VjcmV0X0tleV9FbmNvZGVfUGxlYXNl"
-  expiration-ms: 3600000
-  refresh-expiration-ms: 1209600000
+  secret-key: ${JWT_SECRET_KEY}
+  expiration-ms: ${JWT_ACCESS_EXP_MS:3600000}
+  refresh-expiration-ms: ${JWT_REFRESH_EXP_MS:1209600000}
 
 springdoc:
   api-docs:
-    enabled: true
+    enabled: true         # dev 기본 true, prod에서 false로 덮어씀
     path: /api-docs
   cache:
     disabled: true
@@ -77,22 +90,17 @@ springdoc:
     path: /docs
     use-root-path: false
 
-# 2233076 13주차 추가
-# 잡코리아 API 설정
+# Jobkorea API
 jobkorea:
   api:
-    # API 키가 없으면 Mock 데이터 사용
-    # API 키를 받으면 여기에 입력
-    url: "http://www.jobkorea.co.kr/Service_JK/Data/JK_GI_XML_List.asp?api=1284"
-    key: "1284"
-    # 기본 검색 키워드 (개발자 전용)
-    default-keywords: Java|Spring|Python|JavaScript|React|Node|백엔드|프론트엔드|풀스택|개발자
+    url: ${JOBKOREA_API_URL:}
+    key: ${JOBKOREA_API_KEY:}
+    default-keywords: >
+      ${JOBKOREA_DEFAULT_KEYWORDS:Java|Spring|Python|JavaScript|React|Node|백엔드|프론트엔드|풀스택|개발자}
 
-# 2233076 13주차 추가
-# Gemini API 설정
+# Gemini API
 gemini:
   api:
-    key: "AIzaSyCrZbZZL6fqvFpQ1kNfedg87zKwSygGNH0"
-    url: "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
-
-    model: "gemini-2.5-flash"
+    key: ${GEMINI_API_KEY:}
+    url: ${GEMINI_API_URL:https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent}
+    model: ${GEMINI_MODEL:gemini-2.5-flash}

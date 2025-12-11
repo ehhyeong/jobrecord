@@ -1,29 +1,82 @@
 ﻿version: "3.8"
+
 services:
   mysql8:
     image: mysql:8.4
     container_name: mysql8
-    ports:
-      - "3307:3306"
+    restart: always
     environment:
-      MYSQL_DATABASE: jobproj_db
-      MYSQL_USER: db_user
-      MYSQL_PASSWORD: db_password
-      MYSQL_ROOT_PASSWORD: root_password
-      TZ: Asia/Seoul
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      TZ: ${TZ:-Asia/Seoul}
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
     volumes:
       - ./db/init:/docker-entrypoint-initdb.d
       - mysql-data:/var/lib/mysql
+    networks:
+      - jobrecord-net
+    # 로컬에서는 3307, 서버에서는 3306 등 .env에서 조절
+    ports:
+      - "${DB_PORT_MAPPING:-3307}:3306"
 
-  # 2233076 10주차 추가 (Redis 서비스)
   redis:
     image: redis:latest
-    container_name: jobrecord-redis # (수정) 컨테이너 이름
-    ports:
-      - "6379:6379" # application.yml의 6379 포트와 일치
+    container_name: jobrecord-redis
+    restart: always
+    command: ["redis-server", "--appendonly", "yes"]
     volumes:
       - redis-data:/data
+    networks:
+      - jobrecord-net
+    ports:
+      - "${REDIS_PORT_MAPPING:-6379}:6379"
+
+  backend:
+    # ✅ 서버에서 직접 빌드할 거면 build 사용
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # ✅ 레지스트리에서 가져올 거면 위 build 지우고 아래 image 사용
+    # image: ${BACKEND_IMAGE_NAME:-jobrecord-backend}
+    container_name: jobrecord-backend
+    restart: always
+    depends_on:
+      - mysql8
+      - redis
+    # .env(.prod) 전체를 컨테이너 환경변수로 전달
+    env_file:
+      - .env
+    networks:
+      - jobrecord-net
+    # 내부에서만 8080으로 노출 (nginx가 프록시)
+    expose:
+      - "8080"
+    # 👇 로컬에서 직접 8080으로 보고 싶으면 이 부분 잠깐 쓰면 됨
+    # ports:
+    #   - "${SERVER_PORT:-8080}:8080"
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: jobrecord-nginx
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "80:80"   # 브라우저에서 http://도메인 으로 접속
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/logs:/var/log/nginx
+    networks:
+      - jobrecord-net
 
 volumes:
   mysql-data:
-  redis-data: # 2233076 10주차 추가 (Redis 볼륨)
+  redis-data:
+
+networks:
+  jobrecord-net:
+    driver: bridge

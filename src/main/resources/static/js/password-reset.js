@@ -1,6 +1,7 @@
 // 비밀번호 찾기(모달) - 인증번호 발송/검증 + 3분 타이머 + 비밀번호 재설정
 
-const API_BASE_URL = (window.ENV && window.ENV.API_BASE_URL) ? window.ENV.API_BASE_URL : "http://localhost:8080";
+const API_BASE_URL =
+  (window.ENV && window.ENV.API_BASE_URL) ? window.ENV.API_BASE_URL : '';
 
 // 1단계 요소
 const formRequest = document.getElementById("form-request");
