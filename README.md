@@ -9,6 +9,23 @@ JWT 인증을 통해 이력서 소유권을 강하게 보장하고, 파일 업�
 
 ---
 
+## 🌐 배포 주소
+
+- **서비스 URL**: [http://jobrecord.kro.kr/](http://jobrecord.kro.kr/)  
+  _배포 기간: 2025/12 ~ 미정_
+
+---
+
+## 👥 팀원 소개
+
+| 이름   | GitHub |
+|--------|--------|
+| 김태형 | [ehhyeong](https://github.com/ehhyeong/) |
+| 김용하 | [yongha03](https://github.com/yongha03) |
+| 박주승 | [ParkJus](https://github.com/ParkJus) |
+
+---
+
 ## ⚙️ 기술 스택
 
 | 구분         | 기술                                  |
