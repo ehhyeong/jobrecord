@@ -1,11 +1,18 @@
 # section
 
-> 이력서의 **교육/경력/프로젝트/스킬** 세부 섹션 모듈 모음.
+> 이력서의 **교육 / 경력 / 프로젝트 / 스킬** 등 세부 섹션을 담당하는 모듈 모음입니다.
 
 ## 공통 정책
-- 모든 CRUD는 **소유권 강제**(토큰 사용자 == 리소스 소유자)
-- 페이징/검색 시 `PageRequest`, `PageResponse` 사용
-- DTO는 각 하위 폴더에 정의(Controller/Service/Repository/Dto 4셋트)
 
-## 하위 폴더
-- `education/`, `experience/`, `project/`, `skill/`
+- 모든 CRUD API는 **이력서 소유자(현재 로그인 사용자)** 기준으로 동작합니다.
+- 조회/수정/삭제 시 항상 소유권을 확인합니다.
+- 목록 조회 시 `PageRequest`, `PageResponse` 를 사용하여 일관된 페이지네이션 제공.
+
+## 하위 패키지
+
+- `education/` : 학력(학교, 전공, 재학/졸업 정보 등)
+- `experience/` : 경력(회사, 직무, 기간, 역할)
+- `project/` : 프로젝트(프로젝트명, 역할, 성과, 사용 기술 등)
+- `skill/` : 기술 스택(기술명, 숙련도, 사용 기간 등)
+
+각 하위 패키지는 Controller / Service / Repository / Dto 를 한 세트로 가집니다.

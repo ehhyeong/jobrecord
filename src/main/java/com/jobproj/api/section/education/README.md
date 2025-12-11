@@ -1,15 +1,16 @@
 # section/education
 
-> 학력(교육) 섹션 CRUD.
+> 이력서 내 **학력(교육)** 섹션 CRUD 를 담당하는 패키지입니다.
 
-## 엔드포인트(예시)
-- `POST /api/section/education`
-- `GET /api/section/education/{id}`
-- `GET /api/section/education?resumeId={id}`
-- `PATCH /api/section/education/{id}`
-- `DELETE /api/section/education/{id}`
+## 예시 필드
+
+- 학교명, 전공
+- 입학/졸업(예정)일자
+- 학위/과정(학사/석사/부트캠프 등)
+- 성적, 주요 수강 과목 등(필요 시)
 
 ## 구현 포인트
-- Controller: `CurrentUser.id()` → Service 전달
-- Service: **owner 검사** 후 CRUD
-- Repository: `findByIdAndUserId(...)` 등 **소유자 조건** 포함
+
+- 이력서(owner)와의 관계를 항상 유지하며,
+  소유자가 아닌 사용자는 조회/수정/삭제할 수 없습니다.
+- 정렬(예: 최신 학력 우선) 기준을 명확히 정의합니다.

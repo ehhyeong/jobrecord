@@ -1,176 +1,174 @@
-# 💼 JobProj 백엔드 (Spring Boot + JDBC)
+# JobRecord 백엔드 (Spring Boot + JDBC)
 
 > 웹 이력서 관리 및 채용 정보 연동 백엔드 서버  
-> Spring Boot 3.x + Java 17 + **JDBC Template** 기반 REST API
+> Spring Boot 3.3.5 + Java 17 + JDBC Template 기반 REST API
+
+사용자가 여러 개의 이력서를 저장/관리하고,  
+채용 공고와 연동하여 **내 이력서를 기준으로 채용 공고를 탐색**할 수 있도록 만드는 프로젝트의 백엔드입니다.  
+JWT 인증을 통해 이력서 소유권을 강하게 보장하고, 파일 업로드/다운로드, 채용공고 API 연동 등을 제공합니다.
 
 ---
 
 ## ⚙️ 기술 스택
 
-| 구분 | 기술 |
-|---|---|
-| 언어 | Java 17 |
-| 프레임워크 | Spring Boot 3.3.x |
-| 빌드 도구 | Gradle |
-| 데이터베이스 | MySQL 8.x |
-| 데이터 접근 | JDBC Template |
-| 인증/인가 | Spring Security + JWT |
-| 문서화 | Swagger / OpenAPI |
-| 실행/배포 | Docker Compose |
-| IDE | IntelliJ IDEA |
+| 구분         | 기술                                  |
+|------------|---------------------------------------|
+| 언어        | Java 17                               |
+| 프레임워크    | Spring Boot 3.3.x                     |
+| 빌드 도구     | Gradle                                |
+| 데이터베이스   | MySQL 8.x                             |
+| 데이터 접근    | Spring JDBC (JdbcTemplate)          |
+| 인증/인가     | Spring Security + JWT                |
+| 캐시         | Redis                                 |
+| 문서화       | springdoc-openapi (Swagger UI)       |
+| 템플릿       | Thymeleaf (resume HTML 템플릿 렌더링) |
+| 마이그레이션   | Flyway                                |
+| 실행/배포     | Docker, Docker Compose, Nginx        |
+| IDE        | IntelliJ IDEA                         |
 
 ---
 
 ## 🚀 빠른 시작 (Quick Start)
 
-### 1) MySQL 실행
+### 0) 사전 준비
+
+1. JDK 17 이상 설치
+2. Docker / Docker Compose 설치
+3. 레포 클론
 
 ```bash
-docker compose up -d
+git clone https://github.com/ehhyeong/jobrecord.git
+cd jobrecord
 ```
 
-- `./db/V1__Init_Tables.sql.sql`로 스키마 자동 생성  
-- (선택) `./sql/02_sample_data.sql`을 실행해 샘플 데이터 추가
-
-### 2) IntelliJ로 열기
-
-- 프로젝트를 **Gradle 프로젝트**로 임포트
-- **JDK 17** 사용
-
-### 3) 서버 기동
-
-- `com.jobproj.api.Application` 실행
+4. `.env` 파일 생성(아래 예시 참고)
 
 ---
 
-## ⚙️ 환경 설정 하이라이트
+### 1) Docker Compose로 전체 실행
 
-`src/main/resources/application.yml`
+MySQL + Redis + 백엔드 + Nginx 를 한 번에 띄우는 방법입니다.
 
-- 업로드 한도: `spring.servlet.multipart.max-file-size: 10MB`, `max-request-size: 10MB`
-- **지연 파싱**: `spring.servlet.multipart.resolve-lazily: true` (용량 초과를 전역 핸들러에서 400으로 응답)
-- Tomcat: `server.tomcat.max-swallow-size: -1` (에러 응답이 삼켜지지 않게)
-- Actuator: `management.endpoints.web.base-path: /api/actuator`
-- JWT: `jwt.expiration-ms`, `jwt.refresh-expiration-ms`
-
----
-
-## 🧩 이번 주 반영 (Week 8)
-
-- **파일 업로드 정책**
-  - 허용: **png/jpg/jpeg/pdf**
-  - 차단: exe 및 비허용 타입
-  - **10MB 제한** (초과 시 `HTTP 400`, `"file too large (max 10MB)"`)
-  - 다운로드 응답에 **`Content-Disposition: attachment; filename=...`**
-- **이력서 소유권 강제 (403)**
-  - 모든 `/api/resumes/**`는 **토큰 사용자 == 리소스 소유자**
-  - 불일치 시 403 (`OwnerMismatchException` → 전역 핸들러 매핑)
-- **리프레시 토큰**
-  - `POST /auth/refresh` 로 액세스 토큰 재발급
-
----
-
-## 📡 주요 엔드포인트 (Endpoints)
-
-> 기본적으로 `/api/**` 경로는 **JWT 필요** (일부 `/auth/*` 제외)
-
-| 메서드 | 경로 | 설명 |
-|---|---|---|
-| **Auth** |||
-| POST | `/auth/login` | 로그인 (요청: `{"email","password"}`) |
-| POST | `/auth/refresh` | 리프레시 토큰으로 액세스 토큰 재발급 |
-| **Health/Docs** |||
-| GET | `/api/actuator/health` | 서버 상태 |
-| GET | `/swagger-ui` | Swagger UI |
-| **Resumes (소유권 강제)** |||
-| GET | `/api/resumes` | 내 이력서 목록(페이지/키워드) |
-| GET | `/api/resumes/{id}` | 이력서 단건 조회 (**owner == me**) |
-| POST | `/api/resumes` | 이력서 생성 |
-| PATCH | `/api/resumes/{id}` | 이력서 수정 (**owner == me**) |
-| DELETE | `/api/resumes/{id}` | 이력서 삭제 (**owner == me**) |
-| **Attachments (파일 업/다운로드)** |||
-| POST | `/attachments?resumeId={id}` | 파일 업로드 (허용: png/jpg/jpeg/pdf, **≤10MB**) |
-| GET | `/attachments/{id}/download` | 파일 다운로드 (**`Content-Disposition` 헤더**) |
-| **Job Postings** *(필요 시)* ||
-| GET | `/job-postings/active?limit=10&offset=0` | 활성 채용공고 목록 |
-
-> **주의**: 과거 `/resumes` 루트 엔드포인트는 **레거시**입니다. 현재는 **`/api/resumes`**를 사용합니다.
-
----
-
-## 🧪 cURL 스니펫 (빠른 검증)
-
-```powershell
-$TOKEN='eyJhbGciOiJIUzI1NiJ9...'   # 로그인으로 받은 최신 토큰
-
-# 1) 정상 업로드 (PNG)
-curl.exe --http1.1 --no-keepalive "http://localhost:8080/attachments?resumeId=3" `
-  -H "Authorization: Bearer $TOKEN" -H "Accept: application/json" -H "Expect:" `
-  -F "file=@`"$env:TEMP\ok.png`";type=image/png"
-
-# 2) EXE 차단
-curl.exe --http1.1 --no-keepalive "http://localhost:8080/attachments?resumeId=3" `
-  -H "Authorization: Bearer $TOKEN" -H "Accept: application/json" -H "Expect:" `
-  -F "file=@`"$env:TEMP\bad.exe`";type=application/octet-stream"
-
-# 3) 10MB 초과 차단
-curl.exe --http1.1 --no-keepalive "http://localhost:8080/attachments?resumeId=3" `
-  -H "Authorization: Bearer $TOKEN" -H "Accept: application/json" -H "Expect:" `
-  -F "file=@`"$env:TEMP\big.pdf`";type=application/pdf"
-
-# 4) 다운로드 (헤더 확인: Content-Disposition)
-curl.exe -v "http://localhost:8080/attachments/4/download" `
-  -H "Authorization: Bearer $TOKEN"
+```bash
+docker compose up -d --build
 ```
+
+- MySQL 컨테이너: `mysql8`
+- Redis 컨테이너: `jobrecord-redis`
+- 백엔드 컨테이너: `jobrecord-backend` (내부 포트 8080)
+- Nginx 컨테이너: `jobrecord-nginx` (호스트 포트 80)
+
+접속:
+
+- API: `http://localhost` (nginx가 백엔드로 프록시)
+- Swagger UI: `http://localhost/docs` (환경에 따라 `/swagger-ui` 또는 `/docs`)
+
+> DB 스키마는 Flyway 마이그레이션으로 자동 생성되며,  
+> 필요 시 `sql/02_sample_data.sql`을 직접 실행해 샘플 데이터를 넣을 수 있습니다.
+
+---
+
+### 2) 로컬 개발 모드 (IntelliJ에서 실행)
+
+1. 로컬 MySQL / Redis 준비  
+   또는 Docker로 DB/Redis만 실행:
+
+   ```bash
+   docker compose up -d mysql8 jobrecord-redis
+   ```
+
+2. IntelliJ에서 프로젝트 열기
+   - Open → 클론한 `jobrecord` 폴더 선택
+   - Gradle 프로젝트로 Import
+   - JDK 17 설정
+
+3. 스프링 부트 실행
+   - `com.jobproj.api.Application` 메인 클래스 실행
+   - 기본 포트: `http://localhost:8080`
+
+4. 샘플 데이터 추가 (선택)
+   - MySQL에 접속해서 `sql/02_sample_data.sql` 실행
+
+---
+
+## 🔐 환경 변수 / .env 설정
+
+`.env` 예시:
+
+```env
+SPRING_PROFILES_ACTIVE=dev
+SERVER_PORT=8080
+
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_NAME=jobproj_db
+DB_USERNAME=db_user
+DB_PASSWORD=db_password
+DB_ROOT_PASSWORD=root_password
+DB_PORT_MAPPING=3307
+
+REDIS_HOST=127.0.0.1
+REDIS_PORT=6379
+REDIS_PORT_MAPPING=6379
+
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=your_email@gmail.com
+MAIL_PASSWORD=your_app_password
+
+JWT_SECRET_KEY=change-me-please
+JWT_EXPIRATION_MS=3600000
+JWT_REFRESH_EXPIRATION_MS=1209600000
+
+JOBKOREA_API_URL=http://www.jobkorea.co.kr/Service_JK/Data/JK_GI_XML_List.asp
+JOBKOREA_API_KEY=your_jobkorea_key
+JOBKOREA_DEFAULT_KEYWORDS=Java|Spring|Python|JavaScript|React|Node|백엔드|프론트엔드|풀스택|개발자
+
+GEMINI_API_KEY=your_gemini_key
+GEMINI_API_URL=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+GEMINI_MODEL=gemini-2.5-flash
+```
+
+---
+
+## 📝 최근 주요 변경 사항
+
+- 파일 업로드 정책 강화 (허용 확장자, 10MB 제한, 예외 처리 개선)
+- 이력서 소유권 검증 (토큰 사용자와 리소스 소유자가 다르면 403)
+- 리프레시 토큰 기반 액세스 토큰 재발급 (`POST /auth/refresh`)
+
+---
+
+## 📡 주요 엔드포인트 (요약)
+
+- `POST /auth/login` – 로그인
+- `POST /auth/refresh` – 토큰 재발급
+- `GET /api/resumes` – 내 이력서 목록
+- `POST /api/resumes` – 이력서 생성
+- `PATCH /api/resumes/{id}` – 이력서 수정
+- `DELETE /api/resumes/{id}` – 이력서 삭제
+- `POST /attachments?resumeId={id}` – 파일 업로드
+- `GET /attachments/{id}/download` – 파일 다운로드
+- `GET /job-postings/active` – 활성 채용공고 조회
 
 ---
 
 ## 📂 프로젝트 구조
 
-```plaintext
-jobrecord_backend/
- ├── build.gradle
- ├── docker-compose.yml
- ├── db/
- │    ├── V1__Init_Tables.sql.sql
- │    └── 02_sample_data.sql
- ├── sql/
- │    └── 02_sample_data.sql                 # (선택) 샘플 데이터
- ├── src/
- │   ├── main/
- │   │   ├── java/com/jobproj/api/
- │   │   │   ├── Application.java
- │   │   │   ├── common/                     # ApiResponse, Page*, 유틸
- │   │   │   ├── config/                     # Security, OpenAPI, CORS, GlobalExceptionHandler
- │   │   │   ├── security/                   # JwtTokenProvider, JwtAuthFilter, CurrentUser
- │   │   │   ├── resume/                     # ResumeController/Service/Repository/Dto
- │   │   │   ├── section/                    # Education/Experience/Project/Skill
- │   │   │   └── attachment/                 # 파일 업/다운로드 정책
- │   │   └── resources/
- │   │       ├── application.yml
- │   │       └── application-local.yml
- └── README.md
+```text
+.
+├── build.gradle
+├── docker-compose.yml
+├── Dockerfile
+├── sql/
+│   └── 02_sample_data.sql
+├── nginx/
+│   └── conf.d/
+│       └── jobrecord-local.conf
+├── src/
+│   └── main/
+│       ├── java/com/jobproj/api/
+│       └── resources/
+│           └── db/migration/
+└── README.md
 ```
-
----
-
-## 📁 폴더별 역할 요약
-
-| 폴더 | 설명 |
-|---|---|
-| `common` | 공통 응답 포맷(`ApiResponse`), 페이징(`PageRequest/Response`), 공용 유틸 |
-| `config` | 보안/문서화/예외/CORS 등 전역 설정 (`SecurityConfig`, `OpenApiConfig`, `GlobalExceptionHandler`) |
-| `security` | JWT 발급/검증, 인증 필터, `CurrentUser` 주입 |
-| `resume` | 이력서 CRUD: Controller/Service/Repository/Dto (**소유권 강제**) |
-| `section` | 학력/경력/프로젝트/스킬 하위 모듈 (각자 Controller/Service/Repository/Dto) |
-| `attachment` | 파일 업/다운로드, MIME/확장자 검사, **10MB 제한**, `Content-Disposition` 헤더 |
-| `db`, `sql` | 초기 스키마/샘플 데이터 스크립트 |
-
----
-
-## 👤 데모 계정 (선택)
-
-샘플 데이터 삽입 시:
-
-- 이메일: `test@example.com`  
-- 비밀번호: `test1234`
